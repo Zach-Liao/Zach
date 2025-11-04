@@ -1,0 +1,188 @@
+
+
+@keyframes gradientAnimation {
+    0% {background-position: left;}
+    100% {background-position: right;}
+
+}
+
+.bar{
+    background-image: linear-gradient(to right,#29a9ff, #5e0fc5);
+    background-size: 300%;
+
+    animation-name: gradientAnimation;
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    
+    
+
+    display: flex;
+    flex-direction: row;
+    justify-content:flex-start;
+    align-items: center;
+    
+    text-align: left;
+    
+    height: 100px;
+    width: 100%;
+}
+
+.bar > a > *{
+    border-width: 4px;
+    border-color: rgb(5, 22, 117);
+    border-style: solid;
+
+    color: white;
+
+    background-color: #5e0fc5;
+
+    height: 80px;
+    width: 125px;
+    
+    margin: 5px;
+
+    font-size:xx-large;
+
+    align-items: center;
+    text-align: center;
+    line-height: 80px;
+}
+
+.stuff {
+    display: flex;
+    
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    
+}
+
+#siteInfo > * {
+    width: 100%;
+    height: 500px;
+
+
+    background-color: #3e0b81;
+    background-size: 100%, 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+
+
+    text-align: center;
+    font-size: 300px;
+
+
+    margin: 0px;
+    margin-bottom: 5px;
+
+
+}
+
+.stuff > h2{font-size: 48px;}
+.stuff > p {font-size: 32px;}
+
+
+.startButton {
+    position: absolute;
+    left: 275px;
+    top:  220px;
+
+    width: 100px;
+    height: 50px;
+
+    font-size: 40px;
+    text-align: center;
+    color: white;
+
+    border-color: #5e0fc5;
+    border-radius: 5px;
+    border-width: 0px;
+    box-shadow: none;
+
+    background-color: #5e0fc5;
+    
+}
+
+.startButton:active{
+    background-color: #3e0b81;
+}
+
+
+.gameHolder{
+    position: relative;
+}
+
+.gameBg{
+    position: absolute;
+    width: 640px;
+    height: 360px;
+    
+    left: 5px;
+    top: 65px;
+
+    background-repeat: no-repeat,no-repeat,no-repeat;
+    background-position: top left, top left;
+}
+
+
+#games {
+    display: grid;
+    margin: auto;
+
+    
+    grid-template-columns: auto auto auto auto;
+    grid-gap: 50px;
+
+    position: relative;
+}
+
+.fullScreen {
+
+    position: absolute;
+
+    width: 50px;
+    height: 50px;
+
+    right: 10px;
+    bottom: 15px;
+
+    font-size: 40px;
+    text-align: center;
+    color: white;
+
+    border-color: #5e0fc5;
+    border-radius: 5px;
+    border-width: 0px;
+    box-shadow: none;
+    opacity: 0.8;
+
+    background: url('Images/Fullscreen.png') no-repeat center center / cover #5e0fc5;
+
+}
+
+iframe{
+    border-style: solid;
+    border-color: #29a9ff;
+    border-width: 5px;
+    border-radius: 5px;
+}
+
+
+a {
+    text-decoration: none;
+    color: #fff;
+}
+
+body{
+    font-family:calibri;
+    background-color:rgb(27, 27, 27);
+    
+    color: white;
+
+    margin: 0px;
+    
+}
