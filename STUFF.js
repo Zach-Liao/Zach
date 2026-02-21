@@ -10,7 +10,7 @@ let newGame
 for (let i of gameDirectories){
     newGame = _gameTemplate.content.cloneNode(true);
     newGame.querySelector(".gameFrame").setAttribute("data-src", i + "/index.html");
-    newGame.querySelector(".gameBg").setAttribute("style", `background-image: linear-gradient(to bottom, rgba(134, 42, 255, 0.5), rgba(0, 0, 0, 0.5)), url(${i + '/Cover.png'})`);
+    newGame.querySelector(".gameBg").setAttribute("style", `background-image: linear-gradient(to bottom, rgba(134, 42, 255, 0.5), rgba(0, 0, 0, 0.5)), url(${i + '/cover.png'})`);
     newGame.querySelector(".gameTitle").textContent = gameNames[gameDirectories.indexOf(i)];
     console.log(newGame.querySelector(".gameTitle"))
     document.querySelector('#games').appendChild(newGame);
