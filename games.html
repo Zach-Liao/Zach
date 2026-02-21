@@ -16,9 +16,10 @@
 		
 		<div class="stuff">
 			<h2>Games</h2>
-			<p>Here is a collection of games I have made :)<br>There is a dash on fun things btw and press F1 to open and close admin thingy</p>
+			<p>Here is a collection of games I have made :)<br>There is a dash on fun things with space btw and press F1 to open and close admin thingy</p>
 
 			<div id="games">
+				<!--
 				<div class="gameHolder">
 					<h3>A Fishing Game</h3>
 					<iframe class= "gameFrame" data-src="Game/index.html" allowfullscreen="" width="640" height="360"></iframe>
@@ -27,9 +28,8 @@
 
 					<div class="gameBg" style="background-image: linear-gradient(to bottom, rgba(134, 42, 255, 0.5), rgba(0, 0, 0, 0.5)), url('Images/Fishing Scene.png')"></div>
 					<button class="startButton">Start</button>
-					
-
 				</div>
+				
 				<div class="gameHolder">
 					<h3>Fun Stuff</h3>
 					<iframe class= "gameFrame" data-src="Game2/index.html" allowfullscreen="" width="640" height="360"></iframe>
@@ -40,15 +40,31 @@
 					<button class="startButton">Start</button>
 					
 				</div>
+				-->
 				
 			</div>
 			
 		</div>
 
+		<template id="gameTemplate">
+			<div class="gameHolder">
+				<h3 class="gameTitle">A Fishing Game</h3>
+				<iframe class= "gameFrame" data-src="Game/index.html" allowfullscreen="" width="640" height="360"></iframe>
+
+				<button class="fullScreen"></button>
+
+				<div class="gameBg" style="background-image: linear-gradient(to bottom, rgba(134, 42, 255, 0.5), rgba(0, 0, 0, 0.5)), url('Images/Fishing Scene.png')"></div>
+				<button class="startButton">Start</button>
+			</div>		
+		</template>
+
 
 		<script src="STUFF.js"></script>
 
-
+	
 		
 	</body>
+
+
 </html>
+
