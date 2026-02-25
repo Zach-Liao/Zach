@@ -1,5 +1,11 @@
 
 
+@font-face {
+    font-family: mainFont;
+    src: url(Oswald-VariableFont_wght.ttf);
+}
+
+
 @keyframes gradientAnimation {
     0% {background-position: left;}
     100% {background-position: right;}
@@ -194,7 +200,7 @@ a {
 }
 
 body{
-    font-family:calibri;
+    font-family: mainFont;
     background-color:rgb(27, 27, 27);
     
     color: white;
