@@ -29,10 +29,18 @@
 				Just a cat pic dump
 			</p>
 			<div id="catPics">
-			<img src="Images/kittyKissing.jpg">
 			</div>
-
+			
 		</div>
+		<script>
+			const kitty = document.getElementById("catPics");
+			const directories = ["Images/kittyKissing.jpg"];
+			for (let pic of directories){
+				let newImg = document.createElement('img');
+				newImg.src = pic;
+				kitty.appendChild(newImg);
+			}
+		</script>
 
 		
 		
