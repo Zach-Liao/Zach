@@ -1,7 +1,7 @@
 
 
 @font-face {
-    font-family: mainFont;
+    font-family: "mainFont";
     src: url(Oswald-VariableFont_wght.ttf);
 }
 
@@ -33,6 +33,7 @@
 
     
     min-height: 100px;
+    height: 100px;
     width: 100%;
 
     flex-wrap: wrap;
@@ -53,7 +54,7 @@
     background-color: #5e0fc5;
 
     flex: 1 1 120px;
-    height: 80px;
+    height: 80%;
     margin: 5px;
 
     font-size:2rem;
@@ -94,8 +95,6 @@
     align-items: center;
 
     
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
 
     background-image: linear-gradient(to right, #3e0b81, transparent);
     margin-bottom: 5px;
@@ -192,7 +191,6 @@
     width: 100%;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-    grid-template-rows: auto auto auto;
     gap: 5px;
     margin: 5px;
 
