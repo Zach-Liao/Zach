@@ -169,7 +169,7 @@
     height: 360px;
     
     left: 5px;
-    top: 65px;
+    top: 69px;
 
     background-repeat: no-repeat,no-repeat,no-repeat;
     background-position: top left, top left;
@@ -181,7 +181,7 @@
     margin: auto;
 
     
-    grid-template-columns: auto auto auto auto;
+    /*grid-template-columns: auto auto auto auto;*/
     grid-gap: 50px;
 
     position: relative;
