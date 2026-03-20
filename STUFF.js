@@ -1,7 +1,6 @@
 
 
 
-
 const gameDirectories = ["Games/FishingGame", "Games/FunThings", "Games/MultiplayerDemo"];
 const gameNames = ["Fishing Game", "Fun Things", "Multiplayer Test"];
 const  _gameTemplate = document.querySelector("#gameTemplate");
