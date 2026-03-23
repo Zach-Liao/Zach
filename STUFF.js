@@ -40,7 +40,6 @@ function startGame(element){
         
     }
     element.remove();
-    window.alert('just a reminder that you are loved <3');
 }
 
 
