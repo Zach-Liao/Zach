@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nanonaut Action</title>
+    <style>
+        body { margin: 0; background: #000000; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+
+<script>
+// ------------------- CONSTANTS -------------------
+var CANVAS_WIDTH = 800;
+var CANVAS_HEIGHT = 600;
+var NANONAUT_WIDTH = 64;
+var NANONAUT_HEIGHT = 100;
+var GROUND_Y = 540;
+var NANONAUT_Y_ACCELERATION = 0.75;
+var NANONAUT_JUMP_SPEED = 22;
+var NANONAUT_X_SPEED = 5;
+var NANONAUT_BOOST_SPEED = 100;
+var SPACE_KEYCODE = 32; // jump
+var BACKGROUND_WIDTH = 1000;
+var NANONAUT_NR_FRAMES_PER_ROW = 7;
+var NANONAUT_NR_ANIMATION_FRAMES = 7;
+var NANONAUT_ANIMATION_SPEED = 100;
+
+// ------------------- PLAYER STATE -------------------
+var nanonautX, nanonautY, nanonautYSpeed;
+var nanonautIsInTheAir = false;
+var doubleJumpAvailable = true;
+var spaceKeyIsPressed = false;
+var shiftIsPressed = false;
+var nanonautFrameNr = 0;
+var gameFrameCounter = 0;
+var cameraX = 0;
+
+// ------------------- SCORE -------------------
+var score = 0;
+
+// ------------------- STEALTH -------------------
+var isStealth = false;
+var stealthBushesLeft = 0;
+var stealthCooldown = 0;
+
+// ------------------- DASH -------------------
+var dashActive = false;
+var dashDuration = 20;   // frames
+var dashCooldown = 0;    // frames
+var dashTimer = 0;
+
+// ------------------- ENEMY + MISSILE -------------------
+var enemyActive = false;
+var enemyX = 0;
+var enemyY = 200;
+
+var missileActive = false;
+var missileX = 0;
+var missileY = 0;
+var missileSpeed = 12;
+
+var missileWarning = false;
+var warningTimer = 0;
+var warningFlashes = 0;
+var lastMissileTime = 0;
+
+// ------------------- CANVAS -------------------
+var canvas = document.createElement('canvas');
+var c = canvas.getContext('2d');
+canvas.width = CANVAS_WIDTH;
+canvas.height = CANVAS_HEIGHT;
+document.body.appendChild(canvas);
+
+// ------------------- IMAGES -------------------
+var nanonautImage = new Image();
+nanonautImage.src = 'excape iran sprites/plane3.png';
+
+var enemyJetImage = new Image();
+enemyJetImage.src = 'excape iran sprites/plane10.png';
+
+var missileImage = new Image();
+missileImage.src = 'excape iran sprites/missile2.png';
+
+var backgroundImage = new Image();
+backgroundImage.src = 'excape iran sprites/background5.png';
+
+var bush1Image = new Image();
+bush1Image.src = 'excape iran sprites/thingo.png';
+
+var bush2Image = new Image();
+bush2Image.src = 'excape iran sprites/thingo.png';
+
+// ------------------- BUSHES -------------------
+var bushData = [];
+
+// ------------------- EVENTS -------------------
+window.addEventListener('keydown', onKeyDown);
+window.addEventListener('keyup', onKeyUp);
+window.addEventListener('load', start);
+
+function onKeyDown(event) {
+    if(event.keyCode === SPACE_KEYCODE) spaceKeyIsPressed = true;
+    if(event.key === "Shift") shiftIsPressed = true;
+    if(event.key === "Control" && !isStealth && stealthCooldown <= 0){
+        isStealth = true;
+        stealthBushesLeft = 3;
+    }
+}
+
+function onKeyUp(event){
+    if(event.keyCode === SPACE_KEYCODE) spaceKeyIsPressed = false;
+    if(event.key === "Shift") shiftIsPressed = false;
+}
+
+// ------------------- START -------------------
+function start(){
+    resetGame();
+    window.requestAnimationFrame(mainLoop);
+}
+
+// ------------------- RESET -------------------
+function resetGame(){
+    nanonautX = CANVAS_WIDTH/2;
+    nanonautY = GROUND_Y - NANONAUT_HEIGHT;
+    nanonautYSpeed = 0;
+    nanonautIsInTheAir = false;
+    doubleJumpAvailable = true;
+    cameraX = 0;
+    score = 0;
+    isStealth = false;
+    stealthBushesLeft = 0;
+    stealthCooldown = 0;
+
+    dashActive = false;
+    dashTimer = 0;
+    dashCooldown = 0;
+
+    enemyActive = false;
+    missileActive = false;
+    missileWarning = false;
+
+    bushData = generateBushes();
+}
+
+// ------------------- GENERATE BUSHES -------------------
+function generateBushes(){
+    var arr = [];
+    var x = 0;
+    while(x < 2*CANVAS_WIDTH){
+        var img = Math.random() > 0.5 ? bush1Image : bush2Image;
+        arr.push({
+            x: x,
+            y: 90 + Math.random()*20,
+            image: img,
+            width: img.width,
+            height: img.height,
+            scored: false
+        });
+        x += 500 + Math.random()*400; // spacing
+    }
+    return arr;
+}
+
+// ------------------- MAIN LOOP -------------------
+function mainLoop(){
+    update();
+    draw();
+    window.requestAnimationFrame(mainLoop);
+}
+
+// ------------------- UPDATE -------------------
+function update(){
+    gameFrameCounter++;
+
+    if(stealthCooldown > 0) stealthCooldown--;
+
+    // ------------------- DASH -------------------
+    if(shiftIsPressed && dashCooldown <= 0 && !dashActive){
+        dashActive = true;
+        dashTimer = dashDuration;
+        dashCooldown = 180;
+    }
+
+    var currentSpeed = NANONAUT_X_SPEED;
+    if(dashActive){
+        currentSpeed = NANONAUT_BOOST_SPEED;
+        dashTimer--;
+        if(dashTimer <= 0) dashActive = false;
+    } else if(dashCooldown > 0){
+        dashCooldown--;
+    }
+
+    nanonautX += currentSpeed;
+
+    // ------------------- JUMP & DOUBLE JUMP -------------------
+    if(spaceKeyIsPressed){
+        if(!nanonautIsInTheAir){
+            nanonautYSpeed = -NANONAUT_JUMP_SPEED;
+            nanonautIsInTheAir = true;
+            doubleJumpAvailable = true;
+        } else if(doubleJumpAvailable){
+            nanonautYSpeed = -NANONAUT_JUMP_SPEED;
+            doubleJumpAvailable = false;
+        }
+        spaceKeyIsPressed = false; // prevent holding jump
+    }
+
+    nanonautY += nanonautYSpeed;
+    nanonautYSpeed += NANONAUT_Y_ACCELERATION;
+
+    if(nanonautY > (GROUND_Y - NANONAUT_HEIGHT)){
+        nanonautY = GROUND_Y - NANONAUT_HEIGHT;
+        nanonautYSpeed = 0;
+        nanonautIsInTheAir = false;
+        doubleJumpAvailable = true; // reset double jump when on ground
+    }
+
+    cameraX = nanonautX - 150;
+
+    // ------------------- MOVE BUSHES -------------------
+    for(var i=0;i<bushData.length;i++){
+        if((bushData[i].x - cameraX) < -200){
+            bushData[i].x = cameraX + CANVAS_WIDTH + Math.random()*300;
+            bushData[i].scored = false;
+        }
+    }
+
+    // ------------------- SCORE & BUSH SCORING -------------------
+    for(var j=0;j<bushData.length;j++){
+        var bush = bushData[j];
+        if(!bush.scored && nanonautX > bush.x + bush.width/3){
+            score += 10;
+            bush.scored = true;
+            if(isStealth){
+                stealthBushesLeft--;
+                if(stealthBushesLeft<=0){
+                    isStealth=false;
+                    stealthCooldown=1800;
+                }
+            }
+        }
+    }
+
+    // ------------------- BUSH COLLISION -------------------
+    if(score < 100 && !isStealth){
+        for(var i=0;i<bushData.length;i++){
+            var b = bushData[i];
+            var hitboxWidth = b.width*0.25;
+            var hitboxHeight = b.height*0.25;
+            var hitboxX = b.x + (b.width*0.5 - hitboxWidth)/2;
+            var hitboxY = (GROUND_Y - b.y) + (b.height*0.5 - hitboxHeight)/2;
+
+            var hit = nanonautX < hitboxX + hitboxWidth &&
+                      nanonautX + NANONAUT_WIDTH > hitboxX &&
+                      nanonautY < hitboxY + hitboxHeight &&
+                      nanonautY + NANONAUT_HEIGHT > hitboxY;
+
+            if(hit){
+                alert("GAME OVER — score: " + score);
+                resetGame();
+                return;
+            }
+        }
+    }
+
+    // ------------------- ENEMY & MISSILES -------------------
+    if(score >= 100 && !enemyActive){
+        enemyActive = true;
+        enemyX = nanonautX - 200;
+        enemyY = nanonautY;
+    }
+
+    if(enemyActive){
+        enemyX = nanonautX - 200;
+        enemyY += (nanonautY - enemyY)*0.1;
+
+        if(!missileWarning && !missileActive && gameFrameCounter - lastMissileTime > 600){
+            missileWarning = true;
+            warningTimer=0;
+            warningFlashes=0;
+        }
+
+        if(missileWarning){
+            warningTimer++;
+            if(warningTimer%20===0) warningFlashes++;
+            if(warningFlashes>=3 && warningTimer>300){
+                missileWarning=false;
+                missileActive=true;
+                missileX=enemyX+60;
+                missileY=enemyY+20;
+                lastMissileTime=gameFrameCounter;
+            }
+        }
+    }
+
+    if(missileActive){
+        missileX += missileSpeed;
+        var missileWidth = 60;
+        var missileHeight = 30;
+        var hit = nanonautX < missileX + missileWidth &&
+                  nanonautX + NANONAUT_WIDTH > missileX &&
+                  nanonautY < missileY + missileHeight &&
+                  nanonautY + NANONAUT_HEIGHT > missileY;
+        if(hit && !isStealth){
+            alert("GAME OVER — hit by missile! score: "+score);
+            resetGame();
+            return;
+        }
+        if(missileX > cameraX + CANVAS_WIDTH + 100) missileActive=false;
+    }
+}
+
+// ------------------- DRAW -------------------
+function draw(){
+    c.fillStyle='LightSkyBlue';
+    c.fillRect(0,0,CANVAS_WIDTH,GROUND_Y-40);
+    var bgX = -(cameraX%BACKGROUND_WIDTH);
+    c.drawImage(backgroundImage,bgX,0,BACKGROUND_WIDTH,CANVAS_HEIGHT);
+    c.drawImage(backgroundImage,bgX+BACKGROUND_WIDTH,0,BACKGROUND_WIDTH,CANVAS_HEIGHT);
+
+    c.fillStyle='#e857094B';
+    c.fillRect(0,GROUND_Y-40,CANVAS_WIDTH,CANVAS_HEIGHT-GROUND_Y+40);
+
+    var row = Math.floor(nanonautFrameNr/NANONAUT_NR_FRAMES_PER_ROW);
+    var col = nanonautFrameNr%NANONAUT_NR_FRAMES_PER_ROW;
+    c.drawImage(nanonautImage,col*NANONAUT_WIDTH,row*NANONAUT_HEIGHT,NANONAUT_WIDTH,NANONAUT_HEIGHT,
+                nanonautX-cameraX,nanonautY,NANONAUT_WIDTH,NANONAUT_HEIGHT);
+
+    // SCORE
+    c.font="30px OCR A Extended";
+    var text="score: "+score;
+    var w=c.measureText(text).width;
+    c.fillStyle="yellow";
+    c.fillRect(17,26,w+4,34);
+    c.fillStyle="blue";
+    c.fillText(text,19,50);
+
+    // DASH DISPLAY
+    if(dashActive){
+        c.fillStyle="yellow";
+        c.font="22px OCR A Extended";
+        c.fillText("DASH!", 650, 50);
+    } else if(dashCooldown > 0){
+        c.fillStyle="gray";
+        c.font="18px OCR A Extended";
+        c.fillText("Dash CD: " + Math.ceil(dashCooldown/60) + "s", 650, 50);
+    }
+
+    // BUSHES
+    if(score<100){
+        var scale=0.5;
+        for(var i=0;i<bushData.length;i++){
+            var b=bushData[i];
+            c.drawImage(b.image,b.x-cameraX,GROUND_Y-b.y,b.width*scale,b.height*scale);
+        }
+    }
+
+    // ENEMY
+    if(enemyActive){
+        c.drawImage(enemyJetImage,enemyX-cameraX,enemyY,80,60);
+    }
+
+    // MISSILE
+    if(missileActive){
+        c.drawImage(missileImage,missileX-cameraX,missileY,60,30);
+    }
+
+    // MISSILE WARNING
+    if(missileWarning && Math.floor(warningTimer/10)%2===0){
+        c.fillStyle="rgba(255,0,0,0.5)";
+        c.fillRect(0,0,50,CANVAS_HEIGHT);
+        c.fillRect(CANVAS_WIDTH-50,0,50,CANVAS_HEIGHT);
+        c.fillStyle="red";
+        c.font="40px Arial";
+        c.fillText("MISSILE INCOMING",CANVAS_WIDTH/2-180,100);
+    }
+}
+</script>
+</body>
+</html>
