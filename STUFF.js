@@ -14,6 +14,7 @@ for (let i of gameDirectories){
     console.log(newGame.querySelector(".gameTitle"))
     document.querySelector('#games').appendChild(newGame);
     
+    
 }
 
 const startButtons = document.getElementsByClassName("startButton");
