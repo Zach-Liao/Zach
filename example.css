@@ -134,8 +134,12 @@
 
 .stuff > h2{font-size: 48px;}
 .stuff > p {font-size: 32px;}
-
-
+#cool-people > * > *{
+    font-size: 28px;
+}
+#cool-people{
+    list-style-type: none;
+}
 .startButton {
     position: absolute;
     left: 275px;
@@ -240,6 +244,8 @@ iframe{
     border-width: 5px;
     border-radius: 5px;
 }
+
+
 
 
 a {
