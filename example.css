@@ -137,6 +137,12 @@
 #cool-people > * > *{
     font-size: 28px;
 }
+
+#cool-people > * > *:hover{
+    font-size: 36px;
+    transition: all 75ms ease-out;
+}
+
 #cool-people{
     list-style-type: none;
 }
