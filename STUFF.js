@@ -1,8 +1,8 @@
 
 
 
-const gameDirectories = ["Games/FishingGame", "Games/FunThings", "Games/MultiplayerDemo", "Games/EscapeIran"];
-const gameNames = ["Fishing Game", "Fun Things", "Multiplayer Test", "Escape Iran"];
+const gameDirectories = ["Games/FishingGame", "Games/FunThings", "Games/MultiplayerDemo", "Games/EscapeIran", "Games/Poker"];
+const gameNames = ["Fishing Game", "Fun Things", "Multiplayer Test", "Escape Iran", "Poker (AI)"];
 const  _gameTemplate = document.querySelector("#gameTemplate");
 
 let newGame
