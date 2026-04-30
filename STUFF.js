@@ -49,6 +49,9 @@ function fullScreen(element){
     for ( let i of element.parentNode.children){
         if (i.classList.contains("gameFrame")){
             i.requestFullscreen();
+            if (screen.orientation && screen.orientation.lock){
+                screen.orientation.lock('landscape')
+            }
         }
     }
 }
