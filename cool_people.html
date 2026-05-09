@@ -3,7 +3,7 @@
 <html>
 	<head>
 
-	<title>Home</title>
+	<title>Cool People</title>
 	<meta charset="utf-8">
 
 	<link rel="stylesheet" href="example.css">
@@ -50,9 +50,26 @@
                 </li>
 
 			<ul>
+            <div id="games">
+
+			</div>
 		</div>
 
-		
+        
+
+		<template id="gameTemplate">
+			<div class="gameHolder">
+				<h3 class="gameTitle">A Fishing Game</h3>
+				<iframe class= "gameFrame" data-src="Game/index.html" allowfullscreen="" width="640" height="360"></iframe>
+
+				<button class="fullScreen"></button>
+
+				<div class="gameBg" style="background-image: linear-gradient(to bottom, rgba(134, 42, 255, 0.5), rgba(0, 0, 0, 0.5)), url('Images/Fishing Scene.png')"></div>
+				<button class="startButton">Start</button>
+			</div>		
+		</template>
+        <script src="communitySTUFF.js"></script>
+
 		
 	</body>
 </html>
