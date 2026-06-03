@@ -133,7 +133,13 @@
 }
 
 .stuff > h2{font-size: 48px;}
+.stuff > .smallP{font-size:24px;}
 .stuff > p {font-size: 32px;}
+.stuff > h3{font-size: 36px;}
+
+
+
+
 #cool-people > * > *{
     font-size: 28px;
 }
@@ -189,7 +195,7 @@
 }
 
 
-#games {
+.games {
     display: grid;
     margin: auto;
 
@@ -258,7 +264,10 @@ a {
     text-decoration: none;
     color: #fff;
     transition: all 75ms ease-out;
+    
 }
+
+
 
 .bar > a:hover{
     background-color:#29a9ff;
