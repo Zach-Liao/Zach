@@ -1,21 +1,31 @@
 
 
 
-const gameDirectories = ["Games/FishingGame", "Games/FunThings", "Games/MultiplayerDemo"];
-const gameNames = ["Fishing Game", "Fun Things", "Multiplayer Test"];
+
 const  _gameTemplate = document.querySelector("#gameTemplate");
+const gameHolder = document.querySelectorAll('.games');
+let gameDirectories;
+let gameNames;
+//gameDirectories = ["Games/FishingGame", "Games/FunThings", "Games/MultiplayerDemo"];
+//const gameNames = ["Fishing Game", "Fun Things", "Multiplayer Test"];
 
 let newGame
-for (let i of gameDirectories){
-    newGame = _gameTemplate.content.cloneNode(true);
-    newGame.querySelector(".gameFrame").setAttribute("data-src", i + "/index.html");
-    newGame.querySelector(".gameBg").setAttribute("style", `background-image: linear-gradient(to bottom, rgba(134, 42, 255, 0.5), rgba(0, 0, 0, 0.5)), url(${i + '/cover.png'})`);
-    newGame.querySelector(".gameTitle").textContent = gameNames[gameDirectories.indexOf(i)];
-    console.log(newGame.querySelector(".gameTitle"))
-    document.querySelector('#games').appendChild(newGame);
-    
+for (let i of gameHolder){
+    gameDirectories = i.getAttribute("data-directories").split("|");
+    gameNames = i.getAttribute("data-names").split("|");
+
+    for (let directory of gameDirectories){
+        newGame = _gameTemplate.content.cloneNode(true);
+        newGame.querySelector(".gameFrame").setAttribute("data-src", directory + "/index.html");
+        newGame.querySelector(".gameBg").setAttribute("style", `background-image: linear-gradient(to bottom, rgba(134, 42, 255, 0.5), rgba(0, 0, 0, 0.5)), url(${directory + '/cover.png'})`);
+        newGame.querySelector(".gameTitle").textContent = gameNames[gameDirectories.indexOf(directory)];
+        console.log(newGame.querySelector(".gameTitle"))
+        i.appendChild(newGame);
+
     
 }
+}
+
 
 const startButtons = document.getElementsByClassName("startButton");
 const fullScreenButtons = document.getElementsByClassName("fullScreen");
