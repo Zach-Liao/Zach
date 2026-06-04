@@ -18,7 +18,11 @@ for (let i of gameHolder){
         newGame = _gameTemplate.content.cloneNode(true);
         newGame.querySelector(".gameFrame").setAttribute("data-src", directory + "/index.html");
         newGame.querySelector(".gameBg").setAttribute("style", `background-image: linear-gradient(to bottom, rgba(134, 42, 255, 0.5), rgba(0, 0, 0, 0.5)), url(${directory + '/cover.png'})`);
-        newGame.querySelector(".gameTitle").textContent = gameNames[gameDirectories.indexOf(directory)];
+        
+        if (gameNames[gameDirectories.indexOf(directory)] != 'none'){
+            newGame.querySelector(".gameTitle").textContent = gameNames[gameDirectories.indexOf(directory)];
+        }
+        else{newGame.querySelector(".gameTitle").style.visibility = "hidden";}//I want to hide it
         console.log(newGame.querySelector(".gameTitle"))
         i.appendChild(newGame);
 
