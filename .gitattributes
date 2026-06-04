@@ -9,3 +9,9 @@
 /Games/FunThings/index.wasm filter=lfs diff=lfs merge=lfs -text
 /Games/MultiplayerDemo/index.wasm filter=lfs diff=lfs merge=lfs -text
 /Games/FunThings/index.pck filter=lfs diff=lfs merge=lfs -text
+/Games/3dPlatformer/index.wasm filter=lfs diff=lfs merge=lfs -text
+/Games/Asteroids/index.wasm filter=lfs diff=lfs merge=lfs -text
+/Games/BreakOut/index.wasm filter=lfs diff=lfs merge=lfs -text
+/Games/DraftGame/index.wasm filter=lfs diff=lfs merge=lfs -text
+/Games/Platformer/index.wasm filter=lfs diff=lfs merge=lfs -text
+/Games/SourceLikeMovement/index.wasm filter=lfs diff=lfs merge=lfs -text
