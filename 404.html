@@ -29,11 +29,32 @@
 
 			
 			<h2 style="font-size: clamp(3rem, 8vw, 7rem);">404 Page Not Found</h2>
-            <p style="font-size: 48px;">Please go back onto one of the main pages</p>
+            <p style="font-size: 48px;">Please go back onto one of the main pages
+				<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+			</p>
+
+			<div class="games" 
+			data-directories=''
+			data-names='PLAYTEST (Nothing here yet)'>
+
+			</div>
 
 		</div>
 
 		
-		
+		<template id="gameTemplate">
+			<div class="gameHolder">
+				<h3 class="gameTitle">A Fishing Game</h3>
+				<iframe class= "gameFrame" data-src="Game/index.html" allowfullscreen="" width="640" height="360"></iframe>
+
+				<button class="fullScreen"></button>
+
+				<div class="gameBg" style="background-image: linear-gradient(to bottom, rgba(134, 42, 255, 0.5), rgba(0, 0, 0, 0.5)), url('Images/Fishing Scene.png')"></div>
+				<button class="startButton">Start</button>
+			</div>		
+		</template>
+
+
+		<script src="STUFF.js"></script>
 	</body>
 </html>
