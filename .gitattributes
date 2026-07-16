@@ -15,3 +15,13 @@
 /Games/DraftGame/index.wasm filter=lfs diff=lfs merge=lfs -text
 /Games/Platformer/index.wasm filter=lfs diff=lfs merge=lfs -text
 /Games/SourceLikeMovement/index.wasm filter=lfs diff=lfs merge=lfs -text
+/game_files/3dPlatformer/index.wasm filter=lfs diff=lfs merge=lfs -text
+/game_files/Asteroids/index.wasm filter=lfs diff=lfs merge=lfs -text
+/game_files/BreakOut/index.wasm filter=lfs diff=lfs merge=lfs -text
+/game_files/DraftGame/index.wasm filter=lfs diff=lfs merge=lfs -text
+/game_files/FishingGame/index.pck filter=lfs diff=lfs merge=lfs -text
+/game_files/FishingGame/index.wasm filter=lfs diff=lfs merge=lfs -text
+/game_files/FunThings/index.wasm filter=lfs diff=lfs merge=lfs -text
+/game_files/MultiplayerDemo/index.wasm filter=lfs diff=lfs merge=lfs -text
+/game_files/Platformer/index.wasm filter=lfs diff=lfs merge=lfs -text
+/game_files/SourceLikeMovement/index.wasm filter=lfs diff=lfs merge=lfs -text
