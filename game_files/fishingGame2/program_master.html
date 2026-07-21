@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	  <title>Fishy</title>
+	  
+	</head>
+	<body>
+		<script>
+			//constants
+			var CANVAS_WIDTH = 800
+			var CANVAS_HEIGHT = 600
+
+			//Fish variables
+			var FISH_WIDTH = 80
+			var FISH_HEIGHT = 80
+			var FISH_START_X = 50
+			var FISH_START_Y =  CANVAS_HEIGHT / 2
+			var FISH_Y_ACCELERATION = 1
+			var BASE_FISH_X_SPEED = 5
+			var FISH_X_SPEED = 5
+			var FISH_Y_SPEED = 3.5
+			var FISH_JUMP_SPEED = 20
+
+			//KEY CODES
+			var UP_KEYCODE = 38
+			var DOWN_KEYCODE = 40
+			var RIGHT_KEYCODE = 39
+			var LEFT_KEYCODE = 37
+			
+
+			var BACKGROUND_WIDTH = 1000
+			//Fish Variables
+			var FISH_NR_ANIMATION_FRAMES = 4
+			var FISH_ANIMATION_SPEED = 4
+
+			var BUSH_X_OFFSET = 150
+			var GROUND_Y = 540
+			var BACKGROUND_Y = -200
+
+			//Trash Variables
+			var TRASH_WIDTH = 64;
+			var TRASH_HEIGHT = 64;
+			var TRASH_Y_SPEED = 3;
+			var MIN_DISTANCE_BETWEEN_TRASHS = 400;
+			var MAX_DISTANCE_BETWEEN_TRASHS = 1200;
+			var MAX_ACTIVE_TRASHS = 3;
+
+			var SCREENSHAKE_RADIUS = 16;
+
+			var FISH_MAX_HEALTH = 100;
+			var PLAY_GAME_MODE = 0;
+			var GAME_OVER_GAME_MODE = 1;
+			var TUTORIAL_GAME_MODE = 3;
+			//Rock Variables
+			var ROCK_WIDTH = 64;
+			var ROCK_HEIGHT = 64;
+			var ROCK_Y_SPEED = 5;
+			var MIN_DISTANCE_BETWEEN_ROCKS = 600;
+			var MAX_DISTANCE_BETWEEN_ROCKS = 1200;
+			var MAX_ACTIVE_ROCKS = 1;
+			
+			var rockTimer = 0;//Changed Added a timer for when rock spawns
+
+			//setup
+			var canvas = document.createElement('canvas')
+			var c = canvas.getContext('2d')
+			canvas.width = CANVAS_WIDTH
+			canvas.height = CANVAS_HEIGHT
+			document.body.appendChild(canvas)
+
+			//Define Fish image
+			var fishImage = new Image()
+			fishImage.src = 'fish.png'
+
+			//Define background image.
+			var backgroundImage = new Image()
+			backgroundImage.src = 'background.png'
+
+			//Define bush images.
+			var bush1Image = new Image()
+			bush1Image.src = 'bush1.png'
+
+			var bush2Image = new Image()
+			bush2Image.src = 'bush2.png'
+			
+			//Added Define trash image
+			var trashImage = new Image();
+			trashImage.src = 'plastic_bag.png';
+			
+			//Added Define shiny rock image
+			var rockImage = new Image();
+			rockImage.src = 'shiny_rock.png';
+			
+			var trashData = [];
+			
+			var rockData = [];//we like shiny rocks :)
+
+			var screenshake = false;
+			
+			var fishHealth = FISH_MAX_HEALTH;
+			
+			var gameMode = TUTORIAL_GAME_MODE;
+
+			//test if user pressed inputs for tutorial
+			//Added tutorial vars
+			var tutorialSteps = [0, 0, 0, 0];
+			var tutorialStepsNames = ["Up Arrow",
+				"Down Arrow",
+				"Left Arrow",
+				"Right Arrow"
+			];
+			var tutorial_fade = 1;
+				
+			
+			var fishSpriteSheet = {nrFramesPerRow: 2, spriteWidth: FISH_WIDTH, spriteHeight: FISH_HEIGHT, image: fishImage};
+			
+			//Set fish starting location
+			var fishX = FISH_START_X;
+			var fishY = FISH_START_Y;
+			
+			var fishCollisionRectangle = {xOffset: 60, yOffset: 20, width: 80, height: 80};
+			var trashCollisionRectangle = {xOffset: 50, yOffset: 20, width: 64, height: 64};
+			var rockCollisionRectangle = {xOffset: 50, yOffset: 20, width: 64, height: 64};
+			//Initial acceleration for Fish
+			var fishYSpeed = 0
+  
+			//Added more Fish inputs
+			var upKeyIsPressed = false
+			var downKeyIsPressed = false
+			var rightKeyIsPressed = false
+			var leftKeyIsPressed = false
+
+
+  
+			//Initial Fish spritesheet frame
+			var fishFrameNr = 0
+			var gameFrameCounter = 0
+
+			//Added ROCKS
+			var amount_shiny_rocks = 0;
+			//Setup camera view.
+			var cameraX = 0
+			var cameraY = 0
+  
+			//Define bush objects
+			var bushData = generateBushes()
+
+			//Define event listeners for player input
+			window.addEventListener('keydown', onKeyDown)
+			window.addEventListener('keyup', onKeyUp)
+			window.addEventListener('load', start)
+
+			function start() {
+				window.requestAnimationFrame(mainLoop)
+			}
+
+			function generateBushes() {
+				var generatedBushData = [];
+				var bushX = 0;
+				while (bushX < (2 * CANVAS_WIDTH)) {
+					let bushImage;
+					if (Math.random() >= 0.5) {
+						bushImage = bush1Image;
+					} else {
+						bushImage = bush2Image;
+					}
+					generatedBushData.push({
+						x: bushX,
+						y: 80 + Math.random() * 20,
+						image: bushImage
+					});
+					bushX += 150 + Math.random() * 200;
+				}
+				return generatedBushData;
+			}
+
+			//player input
+
+			function onKeyDown(event) {
+				//Added all directions of movement
+				//Added checking tutorial steps 
+				//Added Tutorial Checks
+				if (event.keyCode === UP_KEYCODE) {
+					upKeyIsPressed = true;
+					tutorialSteps[0] = 1;
+				}
+				if (event.keyCode === DOWN_KEYCODE) {
+					downKeyIsPressed = true;
+					tutorialSteps[1] = 1;
+				}
+				if (event.keyCode === LEFT_KEYCODE) {
+					leftKeyIsPressed = true;
+					tutorialSteps[2] = 1;
+				}
+				if (event.keyCode === RIGHT_KEYCODE) {
+					rightKeyIsPressed = true;
+					tutorialSteps[3] = 1;
+				}
+			}
+
+			function onKeyUp(event) {
+				//Added all directions of movement
+				if (event.keyCode === UP_KEYCODE) {
+					upKeyIsPressed = false;
+				}
+				if (event.keyCode === DOWN_KEYCODE) {
+					downKeyIsPressed = false;
+				}
+				if (event.keyCode === LEFT_KEYCODE) {
+					leftKeyIsPressed = false;
+				}
+				if (event.keyCode === RIGHT_KEYCODE) {
+					rightKeyIsPressed = false;
+				}
+			}
+
+			//main loop
+			function mainLoop() {
+				update();
+				draw();
+				window.requestAnimationFrame(mainLoop);
+			}
+
+			
+
+			
+
+			//updating
+			function update() {
+				if (gameMode != PLAY_GAME_MODE & gameMode != TUTORIAL_GAME_MODE) return;
+
+				if (tutorialSteps.every(value => value === 1)){
+					gameMode = PLAY_GAME_MODE;
+					
+				}
+				if (gameMode === PLAY_GAME_MODE & tutorial_fade > 0){
+					tutorial_fade -= 0.01;
+					if (tutorial_fade === 0.99){
+						fishX = 0;
+					}
+				}
+
+
+				//Added Y Movement
+				if (upKeyIsPressed) {
+				  fishYSpeed = -FISH_Y_SPEED
+				}
+				else if (downKeyIsPressed) {
+				  fishYSpeed = FISH_Y_SPEED
+				}
+				else{fishYSpeed = 0}
+				
+				//Added X Movement
+				if (rightKeyIsPressed) {
+					FISH_X_SPEED = BASE_FISH_X_SPEED + 2;
+					FISH_ANIMATION_SPEED = 3;
+				}
+				else if (leftKeyIsPressed) {
+				  FISH_X_SPEED = BASE_FISH_X_SPEED - 2;
+				  FISH_ANIMATION_SPEED = 5;
+				}
+				else{
+					FISH_X_SPEED = BASE_FISH_X_SPEED;
+					FISH_ANIMATION_SPEED = 4;}
+
+				//Changed Move fish x location
+				fishX = fishX + FISH_X_SPEED;
+
+				//Changed Update fish y location
+				fishY = fishY + fishYSpeed;
+				//Changed Added extraY limits for fish
+				if (fishY > (GROUND_Y - FISH_HEIGHT)) {
+				  fishY = GROUND_Y - FISH_HEIGHT;
+				  fishYSpeed = 0;
+				}
+				else if (fishY < 0){
+					fishY = 0;
+				  fishYSpeed = 0;
+				}
+
+				// Update Animation
+				gameFrameCounter = gameFrameCounter + 1;
+				if ((gameFrameCounter % FISH_ANIMATION_SPEED) === 0) {
+					fishFrameNr = fishFrameNr + 1;
+					if (fishFrameNr >= FISH_NR_ANIMATION_FRAMES) {
+						fishFrameNr = 0;
+					}
+				}
+
+				// Update camera
+				cameraX = fishX - 150;
+				
+				// Update bushes
+				for (var i=0; i<bushData.length; i++){
+				  if ((bushData[i].x - cameraX) < -CANVAS_WIDTH) {
+					bushData[i].x += (2 * CANVAS_WIDTH) + BUSH_X_OFFSET;
+				  }
+				}
+				
+				screenshake = false;
+				if (gameMode != TUTORIAL_GAME_MODE){
+				var fishTouchedATrash = updateTrashes();
+				if (fishTouchedATrash) {
+					screenshake = true;
+					if (fishHealth > 0) fishHealth -= 1;
+				}
+				
+				var fishTouchedARock = updateRocks();
+				if (fishTouchedARock){
+					amount_shiny_rocks += 1;
+				}
+				}
+				//Check if the game is over.
+				if (fishHealth <= 0) {
+					gameMode = GAME_OVER_GAME_MODE;
+					screenshake = false;
+				}
+			}
+			
+			function updateTrashes() {
+				var fishTouchedATrash = false;
+				for (var i=0; i<trashData.length; i++) {
+					if (doesFishOverlapObject(fishX + fishCollisionRectangle.xOffset, fishY + fishCollisionRectangle.yOffset, fishCollisionRectangle.width, fishCollisionRectangle.height, trashData[i].x + trashCollisionRectangle.xOffset, trashData[i].y + trashCollisionRectangle.yOffset, trashCollisionRectangle.width, trashCollisionRectangle.height)) {
+						fishTouchedATrash = true;
+					}
+					trashData[i].y += TRASH_Y_SPEED;//Changed Rubbish now falls down
+
+					//Changed No animation anymore :)
+				}
+				var trashIndex = 0
+				while (trashIndex < trashData.length) {
+					if (trashData[trashIndex].x < cameraX - TRASH_WIDTH) {
+						trashData.splice(trashIndex, 1);
+				
+					} else {
+						trashIndex += 1;
+					}
+				}
+				if (trashData.length < MAX_ACTIVE_TRASHS) {
+					var lastTrashX = cameraX + CANVAS_WIDTH;
+					if (trashData.length > 0) {
+						lastTrashX = trashData[trashData.length - 1].x;
+					}
+					//var newTrashX = lastTrashX + MIN_DISTANCE_BETWEEN_TRASHS + Math.random() * (MAX_DISTANCE_BETWEEN_TRASHS - MIN_DISTANCE_BETWEEN_TRASHS);
+					trashData.push({
+						x:Math.random() * (CANVAS_WIDTH - FISH_WIDTH)+ fishX, y:0 - TRASH_HEIGHT //Changed Rocks also spawn at the top
+					});
+				}
+				return fishTouchedATrash;
+			}
+			//Changed Copied trash ai for shiny rocks
+			function updateRocks() {
+				var fishTouchedARock = false;
+				var rockTouched = -1;
+				for (var i=0; i<rockData.length; i++) {
+					if (doesFishOverlapObject(fishX + fishCollisionRectangle.xOffset, fishY + fishCollisionRectangle.yOffset, fishCollisionRectangle.width, fishCollisionRectangle.height, rockData[i].x + rockCollisionRectangle.xOffset, rockData[i].y + rockCollisionRectangle.yOffset, rockCollisionRectangle.width, rockCollisionRectangle.height)) {
+						fishTouchedARock = true;
+						rockTouched = i;
+					}
+					rockData[i].y += ROCK_Y_SPEED;//Changed rock now falls down
+
+				}
+
+				if (rockTouched != -1){
+					rockData.splice(rockTouched, 1);
+				}
+
+
+				var rockIndex = 0
+				while (rockIndex < rockData.length) {
+					if (rockData[rockIndex].x < cameraX - ROCK_WIDTH) {
+						rockData.splice(rockIndex, 1);
+				
+					} else {
+						rockIndex += 1;
+					}
+				}
+
+				rockTimer += 1;
+				
+				if (rockData.length < MAX_ACTIVE_ROCKS & rockTimer > 250) {
+					rockTimer = 0;
+					//var lastRockX = cameraX + CANVAS_WIDTH;
+					//if (rockData.length > 0) {
+					//	lastRockX = rockData[rockData.length - 1].x;
+					//}
+					//Changed Not based on last rock anymore
+
+					//var newRockX = lastRockX + MIN_DISTANCE_BETWEEN_ROCKS + Math.random() * (MAX_DISTANCE_BETWEEN_ROCKS - MIN_DISTANCE_BETWEEN_ROCKS);
+					rockData.push({
+						x:Math.random() * (CANVAS_WIDTH - FISH_WIDTH)+ fishX + FISH_WIDTH,//Changed Spawns randomly infront of player on screen
+						y:0 - ROCK_HEIGHT //Changed Rock now spawns at the top
+						//Changed it so it spawns above the screen
+					});
+				}
+				return fishTouchedARock;
+			}
+
+			function doesFishOverlapObjectAlongOneAxis(fishNearX, fishFarX, trashNearX, trashFarX) {
+				var fishOverlapsNearObjectEdge = (fishFarX >= trashNearX) && (fishFarX <= trashFarX);
+				var fishOverlapsFarObjectEdge = (fishNearX >= trashNearX) && (fishNearX <= trashFarX);
+				var fishOverlapsEntireObject = (fishNearX <= trashNearX) && (fishFarX >= trashFarX);
+
+				return fishOverlapsNearObjectEdge || fishOverlapsFarObjectEdge || fishOverlapsEntireObject;
+			}
+			
+			function doesFishOverlapObject(fishX, fishY, fishWidth, fishHeight, trashX, trashY, trashWidth, trashHeight) {
+				var fishOverlapsObjectOnXAxis = doesFishOverlapObjectAlongOneAxis(fishX, fishX + fishWidth, trashX, trashX + trashWidth);
+				var fishOverlapsObjectOnYAxis = doesFishOverlapObjectAlongOneAxis(fishY, fishY + fishHeight, trashY, trashY + trashHeight);
+
+				
+				return fishOverlapsObjectOnXAxis && fishOverlapsObjectOnYAxis;
+			}
+			
+			//drawing
+			function draw() {
+				//Shake the screen if necessary
+				var shakenCameraX = cameraX;
+				var shakenCameraY = cameraY;
+				
+				if (screenshake) {
+					shakenCameraX += (Math.random() - .5) * SCREENSHAKE_RADIUS;
+					shakenCameraY += (Math.random() - .5) * SCREENSHAKE_RADIUS;
+				}
+				
+				// Draw the sky
+				c.fillStyle = 'LightSkyBlue';
+				c.fillRect(0, 0, CANVAS_WIDTH, GROUND_Y - 40);
+
+				// Draw the background Changed
+				let backgroundX = - (shakenCameraX % BACKGROUND_WIDTH);
+				c.drawImage(backgroundImage, backgroundX, BACKGROUND_Y);
+				c.drawImage(backgroundImage, backgroundX + BACKGROUND_WIDTH, BACKGROUND_Y);
+
+				//Draw the ground
+				c.fillStyle = '#EAE544'; //Changed colour
+				c.fillRect(0, GROUND_Y - 40, CANVAS_WIDTH, CANVAS_HEIGHT - GROUND_Y + 40);
+
+				// Draw the bushes
+				for (var i=0; i<bushData.length; i++) {
+					var currentBush = bushData[i];
+					c.drawImage(currentBush.image, currentBush.x - shakenCameraX, GROUND_Y - currentBush.y - shakenCameraY);
+				}
+
+				
+				//Draw the trashs.
+				for (var i=0; i<trashData.length; i++) {
+					//Changed Remove animation
+					c.drawImage(trashImage, trashData[i].x - shakenCameraX, trashData[i].y - shakenCameraY)//, TRASH_WIDTH, TRASH_HEIGHT, screenX, screenY, TRASH_WIDTH, TRASH_HEIGHT);
+			
+				}
+				
+				//DRAW ROCKS
+				for (var i=0; i<rockData.length; i++) {
+					//Changed Remove animation
+					c.drawImage(rockImage, rockData[i].x - shakenCameraX, rockData[i].y - shakenCameraY)//, TRASH_WIDTH, TRASH_HEIGHT, screenX, screenY, TRASH_WIDTH, TRASH_HEIGHT);
+			
+				}
+
+				//Draw the fish.
+				drawAnimatedSprite(fishX - shakenCameraX, fishY - shakenCameraY, fishFrameNr, fishSpriteSheet);
+				
+				//UI
+				c.font = '48px sans-serif';
+				//Draw the distance the Fish has travelled.
+				var fishDistance = fishX / 100;
+				c.fillStyle = "black";
+
+				c.fillText(fishDistance.toFixed(0) + 'm', 20, 40);
+				//Changed Draw Shiny Rock amount
+				c.fillStyle = "black";
+				c.fillText("Shiny Rocks: " + amount_shiny_rocks.toString(), 20, 108);
+
+				
+				
+				if (gameMode == TUTORIAL_GAME_MODE || tutorial_fade > 0){//Changed added tutorial text
+					c.fillStyle = `rgba(0, 0, 0, ${tutorial_fade})`;
+					c.fillText("Movement", 500, 300)
+					c.fillText("Avoid the trash", 175, 175)//Quick explanation of game3
+					c.fillText("Collect Shiny Rocks", 175, 225)
+					for (let i = 0; i < 4; i++){
+						
+						c.fillStyle = "red";//Iterates all input checks
+						if (tutorialSteps[i] == 1){
+							c.fillStyle = `rgba(0, 255, 0, ${tutorial_fade})`;
+						}
+						c.fillText(tutorialStepsNames[i], 500, 350 + i * 50)
+					}
+				}
+
+				//Draw the health bar.
+				c.fillStyle = 'red';
+				c.fillRect(400, 10, fishHealth / FISH_MAX_HEALTH * 380, 20);
+				c.strokeStyle = 'red';
+				c.strokeRect(400, 10, 380, 20);
+
+				
+				
+				//If the game is over, draw "GAME OVER"
+				if(gameMode == GAME_OVER_GAME_MODE) {
+					c.fillStyle = 'black';
+					c.font = '96px sans-serif';
+					c.fillText('GAME OVER', 120, 300);
+				}
+			}
+			
+			//Draw animated sprite
+			function drawAnimatedSprite(screenX, screenY, frameNr, spriteSheet) {
+				var spriteSheetRow = Math.floor(frameNr / spriteSheet.nrFramesPerRow);
+				var spriteSheetColumn = frameNr % spriteSheet.nrFramesPerRow;
+				var spriteSheetX = spriteSheetColumn * spriteSheet.spriteWidth;
+				var spriteSheetY = spriteSheetRow * spriteSheet.spriteHeight;
+				c.drawImage(spriteSheet.image, spriteSheetX, spriteSheetY, spriteSheet.spriteWidth, spriteSheet.spriteHeight, screenX, screenY, spriteSheet.spriteWidth, spriteSheet.spriteHeight);
+			}
+		</script>
+	</body>
+</html>
