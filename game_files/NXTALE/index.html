@@ -1,0 +1,1990 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <!-- Custom PreHead code is injected here -->
+  
+
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <!-- Builtin injector for disabling cache -->
+    
+
+    <title>Created with GameMaker:Studio</title>
+
+    <!-- Custom PreStyle code is injected here -->
+    
+
+    <style>
+      @-webkit-keyframes rotation {
+        from {
+          -webkit-transform: rotate(0deg);
+        }
+
+        to {
+          -webkit-transform: rotate(360deg);
+        }
+      }
+
+      @-moz-keyframes rotation {
+        from {
+          -moz-transform: rotate(0deg);
+        }
+
+        to {
+          -moz-transform: rotate(360deg);
+        }
+      }
+
+      @-o-keyframes rotation {
+        from {
+          -o-transform: rotate(0deg);
+        }
+
+        to {
+          -o-transform: rotate(360deg);
+        }
+      }
+
+      @keyframes rotation {
+        from {
+          transform: rotate(0deg);
+        }
+
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      html {
+        background: #060612;
+      }
+
+      body {
+        font-family: arial;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        min-height: -webkit-fill-available;
+        min-height: fill-available;
+        min-height: 100svh; /* Otherwise contents can be covered by an address bar in Safari on iOS 15 */
+        min-width: 100vw;
+        background:radial-gradient( 56.63% 56.63% at 50% 43.37%, #1c1726 0%, #060612 100%);
+        display: flex;
+        flex-direction: column;
+        overflow-x: hidden;
+        place-items: center;
+      }
+
+      body.scrollingDisabled {
+        overflow: hidden;
+      }
+
+      .emscripten {
+        padding-right: 0;
+        display: block;
+      }
+
+      div.emscripten {
+        text-align: center;
+      }
+
+      /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+      canvas.emscripten {
+        display: none;
+        border: 0px none;
+        background-color: black;
+        position: relative;
+        transition: opacity 5s ease-in;
+		-webkit-transition: opacity 5s ease-in;
+        opacity: 0;
+        filter: blur(0) grayscale(0);
+        margin-top: auto;
+        margin-bottom: auto;
+        image-rendering: optimizeSpeed;             /* Older versions of FF          */
+        image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
+        image-rendering: -webkit-optimize-contrast; /* Safari                        */
+        image-rendering: -o-crisp-edges;            /* OS X + Windows Opera (12.02+) */
+        image-rendering: pixelated;                 /* Awesome future-browsers       */
+        -ms-interpolation-mode: nearest-neighbor;   /* IE                            */        
+      }
+
+      canvas.active {
+        animation-name: fadeIn;
+        animation-duration: 2s;
+        opacity: 1;
+      }
+
+      canvas.paused {
+        animation-name: blur;
+        animation-duration: 0.5s;
+        filter: blur(2px) grayscale(1);
+      }
+
+      canvas.unpaused {
+        animation-name: none;
+      }
+
+      canvas.animatedSizeTransitions {
+        transition: width 0.3s ease, height 0.3s ease;
+      }
+
+      @keyframes fadeIn {
+        0% {
+          opacity: 0;
+        }
+
+        100% {
+          opacity: 1;
+        }
+      }
+
+      @keyframes blur {
+        0% {
+          filter: blur(0) grayscale(0);
+        }
+
+        100% {
+          filter: blur(2px) grayscale(1);
+        }
+      }
+
+      .spinner {
+        height: 30px;
+        width: 30px;
+
+        -webkit-animation: rotation 0.8s linear infinite;
+        -moz-animation: rotation 0.8s linear infinite;
+        -o-animation: rotation 0.8s linear infinite;
+        animation: rotation 0.8s linear infinite;
+
+        border: 5px solid #bdff00;
+        border-top: 5px solid #719900;
+        border-radius: 100%;
+      }
+
+      .floating-control {
+        position: absolute;
+        display: none;
+        border: none;
+
+        left: 0px;
+        top: 0px;
+        width: 400px;
+        height: 100%;
+        padding: 10px;
+
+        font-family: monospace;
+        font-size: 8;
+        color: white;
+        background: rgba(53, 18, 84, 0.8);
+        box-shadow: rgb(9 8 13 / 20%) -2px 2px 4px, rgb(9 8 13 / 40%) -4px 4px 16px;
+      }
+
+      #status {
+        display: inline-block;
+        vertical-align: top;
+        font-weight: bold;
+        color: white;
+      }
+
+      #progress {
+        width: 250px;
+        height: 10px;
+        -webkit-appearance: none;
+        appearance: none;
+        padding: 5px;
+      }
+
+      /* Determines the style of the background of the progress bar */
+      progress[value]::-webkit-progress-bar {
+        background-color: #8492a6;
+        height: 10px;
+        border-radius: 15px;
+      }
+      /* Determines the style of the completed part of the progress bar */
+      progress[value]::-webkit-progress-value {
+        background-image: -webkit-linear-gradient(left, #719900, #bdff00);
+        height: 10px;
+        border-radius: 15px;
+      }
+
+      div.loading {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        pointer-events: none;
+      }
+      div.loading > * {
+        padding: 10px;
+        margin: 10px;
+      }
+
+      .output-container {
+        text-align: center;
+        margin-top: auto;
+      }
+      .output-button {
+        border: none;
+        width: 200px;
+        height: 25px;
+        margin: 5px;
+        border-radius: 5px;
+        cursor: pointer;
+        background-color: black;
+        color: #20c20e;
+        font-family: "Lucida Console", Monaco, monospace;
+      }
+
+      #output {
+        display: none;
+        height: 200px;
+        background-color: black;
+        color: white;
+        font-family: "Lucida Console", Monaco, monospace;
+        outline: none;
+        border: none;
+        padding: 0;
+        width: 100%;
+      }
+
+      #message-container {
+        display: none;
+        min-height: 50px;
+        background-color: rgba(20, 20, 20, 0.5);
+        outline: none;
+        border: none;
+        padding: 0;
+        width: 100%;
+        position: absolute;
+        top: 0;
+      }
+
+      #messages {
+        margin-left: 50px;
+        color: white;
+        font-family: "Lucida Console", Monaco, monospace;
+        outline: none;
+        border: none;
+        padding: 0;
+      }
+
+      img.qrCode {
+         opacity: 1.0;
+         width: 50%;
+         height: 50%;
+      }
+
+      #pauseMenuContainer {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #pauseMenuContainer[hidden] {
+        display: none !important;
+        opacity: 0;
+      }
+
+      #pauseMenuBorder {
+        background: linear-gradient(135deg, #FA1E4E, transparent 40%);
+        padding: 1px;
+        border-radius: 4px;
+        clip-path: polygon(10.5px 0, 100% 0, 100% 100%, 0 100%, 0 10.5px);
+        width: 70vw;
+        max-width: 400px;
+      }
+
+      #pauseMenu {
+        display: flex;
+        flex-direction: column;
+        padding: 60px 30px 60px 30px;
+        background: linear-gradient(180deg, #2E273F 16.15%, rgba(46, 39, 63, 0.79) 56.25%, #2E273F 91.15%);
+        border-radius: 4px;
+        clip-path: polygon(10px 0, 100% 0, 100% 100%, 0 100%, 0 10px);
+        animation-name: fadeIn;
+        animation-duration: 0.5s;
+        opacity: 1;
+      }
+
+      #pauseMenu button {
+        font-weight: 500;
+        font-size: 17px;
+        color: white;
+        background: #FA1E4E;
+        border: 1px solid #FA1E4E;
+        border-radius: 6px;
+        padding: 12px 24px;
+        margin: 5px 0;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      #pauseMenu button#quitButton {
+        background: #FA1E4E40;
+      }
+
+      #pauseMenu button:hover {
+        filter: brightness(1.15);
+      }
+
+      #pauseMenu button:active {
+        filter: brightness(0.85);
+      }
+
+      #pauseMenu button[hidden] {
+        display: none;
+      }
+
+      .graph .labels.x-labels {
+        background-color: white;
+        text-anchor: middle;
+      }
+
+      .graph .labels.y-labels {
+        text-anchor: end;
+      }
+
+      .graph {
+        font-family: Averta, -apple-system, "Segoe UI", system-ui, sans-serif;
+        font-feature-settings: "tnum", "lnum";
+        font-style: normal;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 21px;
+        text-decoration-line: none;
+        letter-spacing: 0.25px;
+        background-color: transparent;
+        fill: #ccc;
+      }
+
+      .graph .grid {
+        stroke: #ccc;
+        stroke-dasharray: 0;
+        stroke-width: 1;
+      }
+
+      .labels {
+        font-size: 4px;
+      }
+
+      .label-title {
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 4px;
+      }
+
+      .peer0 {
+        fill: #fa1f4e;
+        stroke: #fa1f4e;
+      }
+      .peer1 {
+        fill: #a970ff;
+        stroke: #a970ff;
+      }
+      .peer2 {
+        fill: #4574ee;
+        stroke: #4574ee;
+      }
+      .peer3 {
+        fill: #c3ff6f;
+        stroke: #c3ff6f;
+      }
+
+      .peer {
+        stroke-width: 0;
+      }
+
+      .peer-frame-delay {
+        fill: none;
+        stroke-width: 1;
+      }
+
+      .acceptable-rollback-button {
+        border: none;
+        width: 50px;
+        height: 25px;
+        margin: 5px;
+        border-radius: 5px;
+        cursor: pointer;
+        background-color: black;
+        color: #20c20e;
+        font-family: "Lucida Console", Monaco, monospace;
+      }
+
+      .peer-acceptable-rollback {
+        fill: none;
+        stroke-width: 1;
+        opacity: 0.3;
+      }
+
+      .relay-rtt {
+        stroke-width: 2;
+      }
+    </style>
+
+    <!-- Custom PostStyle code is injected here -->
+    
+
+    <!-- Builtin injector for injecting flurry analytics code -->
+    
+  </head>
+
+  <!-- Custom PostHead code is injected here -->
+  
+
+  <!-- Custom PreBody code is injected here -->
+  
+
+  <body>
+
+    <!-- Custom BodyStart code is injected here -->
+    
+
+    <!-- Custom PreCanvas code is injected here -->
+    
+
+    <canvas
+      class="emscripten"
+      id="canvas"
+      oncontextmenu="event.preventDefault()"
+      tabindex="-1"
+    >    
+    </canvas>
+
+    <!-- Custom PostCanvas code is injected here -->
+    
+
+    <div id="pauseMenuContainer" hidden>
+      <div id="pauseMenuBorder">
+        <div id="pauseMenu">
+          <button id="resumeButton" onclick="resume()">
+            Resume
+          </button>
+          <button id="quitButton" onclick="quitIfSupported()">
+            Quit
+          </button>
+        </div>
+        </div>
+    </div>
+    <div class="loading">
+      <div class="spinner" id="spinner"></div>
+      <div class="emscripten" id="status">Downloading...</div>
+
+      <progress value="0" max="100" id="progress" hidden="1"></progress>
+      <img id="QRCode" class="qrCode" src="runner.svg" alt="URL QR Code" hidden="1"></img>
+      <img id="QR2Code" class="qrCode" src="runnerLocal.svg" alt="URL QR2 Code" hidden="1"></img>
+    </div>
+
+    <div class="floating-control" id="multiplayer-stats-container">
+      <div class="multiplayer-stats-network" id="multiplayer-stats-network">
+        <svg version="1.2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="graph" aria-labelledby="title" role="img" viewbox="-20 -10 130 140">
+          <title id="title">Network stats</title>
+          <g class="grid x-grid" id="xGrid">
+            <line x1="0" y1="100" x2="100" y2="100"></line>
+
+            <line x1="12.25" y1="99" x2="12.25" y2="101"></line>
+            <line x1="25" y1="98" x2="25" y2="102"></line>
+            <line x1="37.5" y1="99" x2="37.5" y2="101"></line>
+            <line x1="50" y1="98" x2="50" y2="102"></line>
+            <line x1="62.5" y1="99" x2="62.5" y2="101"></line>
+            <line x1="75" y1="98" x2="75" y2="102"></line>
+            <line x1="87.5" y1="99" x2="87.5" y2="101"></line>
+            <line x1="100" y1="98" x2="100" y2="102"></line>
+          </g>
+          <g class="grid y-grid" id="yGrid">
+            <line x1="0" y1="0" x2="0" y2="100"></line>
+
+            <line x1="-2" y1="0" x2="2" y2="0"></line>
+            <line x1="-1" y1="12.5" x2="1" y2="12.50"></line>
+            <line x1="-2" y1="25" x2="2" y2="25"></line>
+            <line x1="-1" y1="37.5" x2="1" y2="37.5"></line>
+            <line x1="-2" y1="50" x2="2" y2="50"></line>
+            <line x1="-1" y1="62.5" x2="1" y2="62.5"></line>
+            <line x1="-2" y1="75" x2="2" y2="75"></line>
+            <line x1="-1" y1="87.5" x2="1" y2="87.5"></line>
+          </g>
+          <g class="labels x-labels">
+            <text x="0" y="110">-8</text>
+            <text x="25" y="110">-4</text>
+            <text x="50" y="110">0</text>
+            <text x="75" y="110">4</text>
+            <text x="100" y="110">8</text>
+            <text x="50" y="115" class="label-title">Time shift</text>
+          </g>
+          <g class="labels y-labels">
+            <text x="-4" y="0" alignment-baseline="middle">16</text>
+            <text x="-4" y="25" alignment-baseline="middle">12</text>
+            <text x="-4" y="50" alignment-baseline="middle">8</text>
+            <text x="-4" y="75" alignment-baseline="middle">4</text>
+            <text x="-4" y="100" alignment-baseline="middle">0</text>
+            <text x="-10" y="50" class="label-title" alignment-baseline="middle">RTT</text>
+          </g>
+
+          <g id="stats-network-peers">
+          </g>
+
+          <g id="stats-network-peer-frame-delays">
+          </g>
+
+          <g id="stats-network-relay-rtt">
+          </g>
+        </svg>
+      </div>
+      <div>
+        <b>Acceptable rollback frames marker:</b>
+        <div>
+          <button class="acceptable-rollback-button" onclick="set_acceptable_rollback(0)">Off</button>
+          <button class="acceptable-rollback-button" onclick="set_acceptable_rollback(1)">+1</button>
+          <button class="acceptable-rollback-button" onclick="set_acceptable_rollback(2)">+2</button>
+          <button class="acceptable-rollback-button" onclick="set_acceptable_rollback(4)">+4</button>
+        </div>
+      </div>
+      <div id="multiplayer-stats">
+        [no stats available]
+      </div>
+    </div>
+    <div class="output-container" id="output-container" >
+      <!-- Custom Button code is injected here -->
+      
+
+      <button class="output-button" id="stats-button" style="visibility: hidden" onclick="toggleElement('multiplayer-stats-container')">
+        Toggle Stats
+      </button>
+      <button class="output-button" id="share-button" style="visibility: hidden" onclick="navigator.clipboard.writeText(window.shareUrl)">
+        Copy Share Url
+      </button>
+      <button class="output-button" id="log-state-button" onclick="log_next_game_state()" style="visibility: hidden">
+        Log State
+      </button>
+      <textarea id="output" rows="8"></textarea>
+    </div>
+
+    <div class="wallpaper-container" id="wallpaper-container" style="display: none">
+      <button class="output-button" onclick="toggleElement('wallpaper-config-iframe')">
+        Toggle configurator
+      </button>
+    </div>
+    <!-- The wallpaper config is displayed in an iframe to make it possible to use keyboard for entering values (it's consumed by
+        the runner in the original document). -->
+    <iframe class="floating-control" id="wallpaper-config-iframe" src="about:blank"></iframe>
+
+    <div id="message-container">
+      <div id="messages">
+      </div>
+    </div>
+
+   <script async
+     data-ad-client="ca-pub-123"
+     data-ad-frequency-hint="30s"
+     data-adbreak-test="on"
+     src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+   </script>
+
+   <script>
+     window.adsbygoogle = window.adsbygoogle || [];
+     const adBreak =  adConfig = function(o) {adsbygoogle.push(o);}
+   </script>
+
+    <script id="tick-worker" type="javascript/worker">
+      let running = false;
+      let stop_called = false;
+
+      let intervalMs = 16;
+
+      onmessage = (e) => {
+        if (e.data.run) {
+          intervalMs = Math.floor(1000 / e.data.fps);
+
+          if (!running) {
+            running = true;
+            setTimeout(tick, intervalMs);
+          }
+        } else {
+          stop_called = true;
+        }
+      }
+
+      const tick = () => {
+        if (stop_called) {
+          stop_called = false;
+          running = false;
+
+          return;
+        }
+
+        const start = new Date().getTime();
+        postMessage('');
+        const end = new Date().getTime();
+
+        let next_update = start + intervalMs - end;
+        next_update = Math.max(next_update, 0);
+        setTimeout(tick, next_update);
+      }
+    </script>
+
+    <script type="text/javascript">
+      const blob = new Blob([document.querySelector('#tick-worker').textContent]);
+      const worker = new Worker(window.URL.createObjectURL(blob));
+
+      worker.onmessage = function () {
+        GM_tick(performance.now());
+      }
+
+      const isMultiplayer = function () {
+        if (typeof GM_is_multiplayer !== 'function') {
+          return false;
+        }
+
+        return GM_is_multiplayer() !== 0;
+      }
+
+      document.addEventListener('visibilitychange', function () {
+        if (!isMultiplayer()) {
+          return;
+        }
+
+        if (document.visibilityState === 'hidden') {
+          worker.postMessage({run: true, fps: 60});
+        } else {
+          worker.postMessage({run: false});
+        }
+      });
+    </script>
+
+    <script type="text/javascript">
+      const CHANGE_ASPECT_RATIO = true;
+
+      var bodyElement = document.getElementsByTagName("body")[0];
+      var statusElement = document.getElementById("status");
+      var progressElement = document.getElementById("progress");
+      var spinnerElement = document.getElementById("spinner");
+      var canvasElement = document.getElementById("canvas");
+      var outputElement = document.getElementById("output");
+      var outputContainerElement = document.getElementById("output-container");
+      var pauseMenu = document.getElementById("pauseMenuContainer");
+      var resumeButton = document.getElementById("resumeButton");
+      var quitButton = document.getElementById("quitButton");
+      canvasElement.addEventListener("click", function() { canvasElement.focus(); });
+      
+      const messageContainerElement = document.getElementById("message-container");
+      const messagesElement = document.getElementById("messages");
+      let rollbackMessages = [];
+
+      let clearRollbackMessagesTimeoutId = -1;
+      const showRollbackMessage = function (message) {
+        let messages = "";
+        rollbackMessages.push(message);
+        rollbackMessages.forEach(m => messages += "<p>" + m + "</p>");
+
+        messagesElement.innerHTML = messages;
+        messageContainerElement.style.display = 'block';
+
+        if (clearRollbackMessagesTimeoutId === -1) {
+          clearTimeout(clearRollbackMessagesTimeoutId);
+        }
+        clearRollbackMessagesTimeoutId = setTimeout(clearRollbackMessages, 5000);
+      };
+
+      const clearRollbackMessages = function () {
+        clearRollbackMessagesTimeoutId = -1;
+        rollbackMessages = [];
+        messageContainerElement.style.display = 'none';
+      };
+
+      var startingHeight, startingWidth;
+      var startingAspect;
+      var Module = {
+        preRun: [],
+        postRun: [],
+        print: (function () {
+          var element = document.getElementById("output");
+          if (element) element.value = ""; // clear browser cache
+          return function (text) {
+            if (arguments.length > 1)
+              text = Array.prototype.slice.call(arguments).join(" ");
+            // These replacements are necessary if you render to raw HTML
+            //text = text.replace(/&/g, "&amp;");
+            //text = text.replace(/</g, "&lt;");
+            //text = text.replace(/>/g, "&gt;");
+            //text = text.replace('\n', '<br>', 'g');
+            console.log(text);
+            if (text === "Entering main loop.") {
+              // It seems that this text ensures game is loaded.
+              ensureAspectRatio();
+            }
+            if (element) {
+              element.value += text + "\n";
+              element.scrollTop = element.scrollHeight; // focus on bottom
+            }
+          };
+        })(),
+        printErr: function (text) {
+          if (arguments.length > 1)
+            text = Array.prototype.slice.call(arguments).join(" ");
+          console.error(text);
+        },
+        canvas: (function () {
+          var canvas = document.getElementById("canvas");
+
+          return canvas;
+        })(),
+        setStatus: function (text) {
+          if (!Module.setStatus.last)
+            Module.setStatus.last = { time: Date.now(), text: "" };
+          if (text === Module.setStatus.last.text) return;
+          var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+          var now = Date.now();
+          if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
+          Module.setStatus.last.time = now;
+          Module.setStatus.last.text = text;
+          if (m) {
+            text = m[1];
+            progressElement.value = parseInt(m[2]) * 100;
+            progressElement.max = parseInt(m[4]) * 100;
+            progressElement.hidden = false;
+            spinnerElement.hidden = false;
+          } else {
+            progressElement.value = null;
+            progressElement.max = null;
+            progressElement.hidden = true;
+
+            // If there are no status text, we are finished and can display
+            // the canvas and hide the spinner
+            if (!text) {
+              spinnerElement.style.display = "none";
+              canvasElement.style.display = "block";
+            }
+          }
+          statusElement.innerHTML = text;
+        },
+        totalDependencies: 0,
+        monitorRunDependencies: function (left) {
+          this.totalDependencies = Math.max(this.totalDependencies, left);
+          Module.setStatus(
+            left
+              ? "Preparing... (" +
+                  (this.totalDependencies - left) +
+                  "/" +
+                  this.totalDependencies +
+                  ")"
+              : "All downloads complete."
+          );
+        },
+      };
+      Module.setStatus("Downloading...");
+      window.onerror = function (event) {
+        // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
+        Module.setStatus("Exception thrown, see JavaScript console");
+        spinnerElement.style.display = "none";
+        Module.setStatus = function (text) {
+          if (text) Module.printErr("[post-exception status] " + text);
+        };
+      };
+
+      // Route URL GET parameters to argc+argv
+      if (typeof window === "object") {
+        Module['arguments'] = window.location.search.substr(1).trim().split('&');
+        // If no args were passed arguments = [''], in which case kill the single empty string.
+        if (!Module['arguments'][0]) {
+          Module['arguments'] = [];
+        }
+      }
+
+      // add in the script code
+      
+
+      function toggleElement(id) {
+        var elem = document.getElementById(id);
+        if (elem) {
+          elem.style.display = elem.style.display == 'block' ? 'none' : 'block';
+        }
+      }
+
+      var g_pWadLoadCallback = undefined;
+      function setWadLoadCallback( _wadLoadCallback ) 
+      {
+        g_pWadLoadCallback = _wadLoadCallback;
+      }
+
+      var g_pAddAsyncMethod = -1;
+
+      function setAddAsyncMethod( asyncMethod )
+      {
+        g_pAddAsyncMethod = asyncMethod;
+      }
+
+      var g_pJSExceptionHandler = undefined;
+
+      function setJSExceptionHandler( exceptionHandler )
+      {
+        if (typeof exceptionHandler == "function") {
+            g_pJSExceptionHandler = exceptionHandler;
+        } // end if
+      } // end setJSExceptionHandler
+
+      function hasJSExceptionHandler()
+      {
+        return (g_pJSExceptionHandler != undefined) && (typeof g_pJSExceptionHandler == "function");
+      } // end hasJSExceptionHandler
+
+      function doJSExceptionHandler( exceptionJSON )
+      {
+        if (typeof g_pJSExceptionHandler == "function") {
+          var exception = JSON.parse( exceptionJSON );
+          g_pJSExceptionHandler( exception );
+        } // end if
+      } // end doJSExceptionHandler
+
+      function manifestFiles()
+      {
+        return [ "runner.data",
+"runner.js",
+"runner.wasm",
+"audio-worklet.js",
+"game.unx",
+"mus_alphysfix.ogg",
+"mus_amalgam.ogg",
+"mus_ambientwater.ogg",
+"mus_anothermedium.ogg",
+"mus_bad.ogg",
+"mus_barrier.ogg",
+"mus_battle1.ogg",
+"mus_battle2.ogg",
+"mus_bergentruckung.ogg",
+"mus_bgflamea.ogg",
+"mus_birdnoise.ogg",
+"mus_birdsong.ogg",
+"mus_boss1.ogg",
+"mus_cast_1.ogg",
+"mus_cast_2.ogg",
+"mus_cast_3.ogg",
+"mus_cast_4.ogg",
+"mus_cast_5.ogg",
+"mus_cast_6.ogg",
+"mus_cast_7.ogg",
+"mus_chokedup.ogg",
+"mus_churchbell.ogg",
+"mus_computer.ogg",
+"mus_confession.ogg",
+"mus_coolbeat.ogg",
+"mus_core.ogg",
+"mus_coretransition.ogg",
+"mus_core_ambience.ogg",
+"mus_creepy_ambience.ogg",
+"mus_crickets.ogg",
+"mus_cymbal.ogg",
+"mus_dance_of_dog.ogg",
+"mus_date.ogg",
+"mus_date_fight.ogg",
+"mus_date_tense.ogg",
+"mus_deeploop2.ogg",
+"mus_disturbing.ogg",
+"mus_dogappear.ogg",
+"mus_dogmeander.ogg",
+"mus_dogroom.ogg",
+"mus_dogshrine_1.ogg",
+"mus_dogshrine_2.ogg",
+"mus_dogshrine_xbox.ogg",
+"mus_dogsong.ogg",
+"mus_dontgiveup.ogg",
+"mus_doorclose.ogg",
+"mus_dooropen.ogg",
+"mus_drone.ogg",
+"mus_dummybattle.ogg",
+"mus_dununnn.ogg",
+"mus_elevator.ogg",
+"mus_elevator_last.ogg",
+"mus_endarea_parta.ogg",
+"mus_endarea_partb.ogg",
+"mus_endingexcerpt1.ogg",
+"mus_endingexcerpt2.ogg",
+"mus_express_myself.ogg",
+"mus_fallendown2.ogg",
+"mus_fearsting.ogg",
+"mus_flowey.ogg",
+"mus_f_6s_1.ogg",
+"mus_f_6s_2.ogg",
+"mus_f_6s_3.ogg",
+"mus_f_6s_4.ogg",
+"mus_f_6s_5.ogg",
+"mus_f_6s_6.ogg",
+"mus_f_alarm.ogg",
+"mus_f_destroyed.ogg",
+"mus_f_destroyed2.ogg",
+"mus_f_destroyed3.ogg",
+"mus_f_finale_1.ogg",
+"mus_f_finale_1_l.ogg",
+"mus_f_finale_2.ogg",
+"mus_f_finale_3.ogg",
+"mus_f_intro.ogg",
+"mus_f_newlaugh.ogg",
+"mus_f_newlaugh_low.ogg",
+"mus_f_part1.ogg",
+"mus_f_part2.ogg",
+"mus_f_part3.ogg",
+"mus_f_saved.ogg",
+"mus_f_wind1.ogg",
+"mus_f_wind2.ogg",
+"mus_gameover.ogg",
+"mus_ghostbattle.ogg",
+"mus_harpnoise.ogg",
+"mus_hereweare.ogg",
+"mus_hotel.ogg",
+"mus_hotel_battle.ogg",
+"mus_house1.ogg",
+"mus_house2.ogg",
+"mus_intronoise.ogg",
+"mus_kingdescription.ogg",
+"mus_lab.ogg",
+"mus_leave.ogg",
+"mus_menu0.ogg",
+"mus_menu1.ogg",
+"mus_menu2.ogg",
+"mus_menu3.ogg",
+"mus_menu4.ogg",
+"mus_menu5.ogg",
+"mus_menu6.ogg",
+"mus_mettafly.ogg",
+"mus_mettatonbattle.ogg",
+"mus_mettaton_ex.ogg",
+"mus_mettaton_neo.ogg",
+"mus_mettaton_pretransform.ogg",
+"mus_mettmusical1.ogg",
+"mus_mettmusical2.ogg",
+"mus_mettmusical3.ogg",
+"mus_mettmusical4.ogg",
+"mus_mettsad.ogg",
+"mus_mett_applause.ogg",
+"mus_mett_cheer.ogg",
+"mus_mode.ogg",
+"mus_mtgameshow.ogg",
+"mus_muscle.ogg",
+"mus_musicbox.ogg",
+"mus_myemeow.ogg",
+"mus_mysteriousroom2.ogg",
+"mus_mystery.ogg",
+"mus_napstachords.ogg",
+"mus_napstahouse.ogg",
+"mus_news.ogg",
+"mus_news_battle.ogg",
+"mus_ohyes.ogg",
+"mus_oogloop.ogg",
+"mus_operatile.ogg",
+"mus_options_fall.ogg",
+"mus_options_summer.ogg",
+"mus_options_winter.ogg",
+"mus_papyrus.ogg",
+"mus_papyrusboss.ogg",
+"mus_piano.ogg",
+"mus_prebattle1.ogg",
+"mus_predummy.ogg",
+"mus_race.ogg",
+"mus_rain.ogg",
+"mus_rain_deep.ogg",
+"mus_repeat_1.ogg",
+"mus_repeat_2.ogg",
+"mus_reunited.ogg",
+"mus_rimshot.ogg",
+"mus_ruins.ogg",
+"mus_ruinspiano.ogg",
+"mus_sansdate.ogg",
+"mus_sfx_a_grab.ogg",
+"mus_sfx_chainsaw.ogg",
+"mus_sfx_hypergoner_charge.ogg",
+"mus_sfx_hypergoner_laugh.ogg",
+"mus_sfx_rainbowbeam_hold.ogg",
+"mus_shop.ogg",
+"mus_sigh_of_dog.ogg",
+"mus_silence.ogg",
+"mus_smallshock.ogg",
+"mus_smile.ogg",
+"mus_snoresymphony.ogg",
+"mus_snowwalk.ogg",
+"mus_snowy.ogg",
+"mus_spider.ogg",
+"mus_spoopy.ogg",
+"mus_spoopy_holiday.ogg",
+"mus_spoopy_wave.ogg",
+"mus_star.ogg",
+"mus_sticksnap.ogg",
+"mus_story.ogg",
+"mus_story_stuck.ogg",
+"mus_st_happytown.ogg",
+"mus_st_him.ogg",
+"mus_st_meatfactory.ogg",
+"mus_st_troubledingle.ogg",
+"mus_temshop.ogg",
+"mus_temvillage.ogg",
+"mus_tension.ogg",
+"mus_tone2.ogg",
+"mus_tone3.ogg",
+"mus_toomuch.ogg",
+"mus_toriel.ogg",
+"mus_town.ogg",
+"mus_tv.ogg",
+"mus_undyneboss.ogg",
+"mus_undynefast.ogg",
+"mus_undynepiano.ogg",
+"mus_undynescary.ogg",
+"mus_undynetheme.ogg",
+"mus_undynetruetheme.ogg",
+"mus_vsasgore.ogg",
+"mus_waterfall.ogg",
+"mus_waterquiet.ogg",
+"mus_wawa.ogg",
+"mus_whoopee.ogg",
+"mus_wind.ogg",
+"mus_woofenstein.ogg",
+"mus_woofenstein_loop.ogg",
+"mus_wrongnumbersong.ogg",
+"mus_wrongworld.ogg",
+"mus_xpart.ogg",
+"mus_xpart_2.ogg",
+"mus_xpart_a.ogg",
+"mus_xpart_b.ogg",
+"mus_xpart_back.ogg",
+"mus_x_undyne.ogg",
+"mus_x_undyne_pre.ogg",
+"mus_yourbestfriend_3.ogg",
+"mus_zzz_c.ogg",
+"mus_zzz_c2.ogg",
+"mus_zz_megalovania.ogg",
+"mus_z_ending.ogg",
+"snd_ballchime.ogg",
+"snd_curtgunshot.ogg",
+"snd_mushroomdance.ogg" ].join( ";");
+      }
+
+      function manifestFilesMD5()
+      {
+        return [ "02d8a6a7c96fe87752a4e60e8a7a02fa",
+"7eb285d8ddb936cebc7b03e69bf13d75",
+"6344cea96b6757c3753745b7ebf72d7d",
+"e8f1e8db8cf996f8715a6f2164c2e44e",
+"4eec280abf54c05b891113084ab04f0c",
+"1e2302743358b69c7494c4b934d3a891",
+"3d98aa2d0b116d12c5ba27840740b89a",
+"a6eaf93759788589b0230fef6da68736",
+"78cb8683e76072a8d7fc7899c020566c",
+"910464223b9f7cfcaa4b94c63751f780",
+"434b91f4dfbeae243dda38030e83e35d",
+"a6761dc72a0ec1ff4b7cd324e6ca20fc",
+"c590a824ff5021f90d459780291921e1",
+"7bcf55005118d033a1c714120c3441a8",
+"a0850c405e4d82e268120cfedb7b294b",
+"e7f46cb8433902fe02be26d242d489f5",
+"884cd511b594253f62a57bc8512b173c",
+"022bae0ac4b032934c76b7c40139b320",
+"b0313664f3be63c365eccfafd8f30778",
+"2e0da51a468c7fe9b8608b3613e94540",
+"148d0ff0704478ec8589346456785fcf",
+"845c6d37a4249e9d60adac6b02c4c556",
+"bac198107cb23bbdda92ea8b36cf7bd3",
+"886f01c4139f4a24d8bcfd6d8206087b",
+"dada702eaf7e2e7ee49c907a9cb2a8c0",
+"f606c29e10ad9cf0d9a1d900c141f5bd",
+"b32ad35e533800469be75825fccf3c44",
+"32f9d07bac1ce56d4ca828bf51cd1477",
+"95d84e3183b0f46e6a643b8bf7fb01ff",
+"d38b231166e1726d08a3354bb9a5a4d7",
+"b8e7d7e61d9f0e3a42c742a820ea8d69",
+"35e11146095baacb6cf6c8dc2e018934",
+"e6378d499bbb1d86afa05d2ffc7d60ac",
+"0ea80927bdbd878735766555cb7a5fdb",
+"7982674f7e9565350d18f0eba509dab3",
+"812fb0349bda6aba30addc4b616df8e2",
+"49dda9c6914acc129572093306ee6440",
+"30a9551fdba3f8f7ce02ee9c00736d71",
+"d41a043ab64279daeca12197a24c5a1a",
+"9058390082bbab3343bc27f35dc33709",
+"785ccf059fbff6d6b70954d3fddb447f",
+"1b287cf522d9a9bd18c5333e8b7666e4",
+"194ccef4ff32a217c57cca564d355751",
+"a36fe48a12ac5e620fdd0af7f9679d74",
+"5a742cd20a4205940f12f6c6acd5cfd5",
+"a6231036c5f71d8e916e0db748498eb9",
+"b8411275e3cd5229b3bad779fc3eda70",
+"9998afeadf3e734c7b869bbf42762add",
+"9998afeadf3e734c7b869bbf42762add",
+"9fa191849b8d7732d1845995e73dbc32",
+"a31ff9550761d1d1de76317fdfb1ca61",
+"f9639f695d25f5d053c4567bf3ad07a3",
+"3118ed8e11c17c30d12fd02ef67d1c1e",
+"d5b8d6c3e939fabddf07883a71b1905b",
+"3233125ed5fc44f2af370a265fd0530c",
+"7b0a9bf440f29c6a45ae7c536f6cf32a",
+"f7e44404493aed18ade511a981ff2d29",
+"7896d945483b6a66e3dd30d641274956",
+"8514db47cf2640b4e009eb0ba56f7ee5",
+"ddb0fecc345a00def7f56787401734d6",
+"01a462a8a0180d78dd9c41dfad2a5464",
+"d891ced52623f0a7ea543593b7a1921b",
+"90e55f21ab721942f183b7310f848fe2",
+"5bffae5d62df6c4d6dd5394e20c2c517",
+"8c345823ed2b90c5c0c3678c1c764efc",
+"a245158ea81decfef7690fed63e9f2ce",
+"5ace6ed127893967c1a417cac2679a47",
+"8b0c12b879f9729610e9137402e01180",
+"b137d2eb462873b6163f3cae42d1f6b0",
+"0309b2ae817bab66dce976ea56a7acbe",
+"4e16c0167f16afee3e9388750b8305dd",
+"2677443d15a82afe059d0273627c74f7",
+"49e055b413f21a27b0c5aea741d15640",
+"bf5a67b2192e939a87b80446ab22f858",
+"de39c6fa78b4b7e51ff09ecb225da7ef",
+"15b87464ca6b7c6b708265136c71b69e",
+"a7e3a26ac12ce60721591ca658caf76f",
+"05392a19fe7a70bc7e405a31d5f83aab",
+"12bf25d015669a78ed879f69b07d8fbf",
+"dceb5c05244887395c426a1dcff6fdd6",
+"2e20753160de4d21f6f5324597a6eeeb",
+"1c4b79523cc8edfe668c8ce36f4e8c2e",
+"00afc2125f0ad47433b6e574b691516d",
+"b6227769464d9ff48a1ba2595e61e488",
+"14335cbeb59b7707cb6d3da62b59f3d8",
+"851e05d25a7e3789228837cb729cb8bb",
+"66f700a48eb3ba2cbf42ea629342d1da",
+"e897e338eac39d6a29116b3d48d2a0d3",
+"1496253147ec62a6a363206b1847ca32",
+"4365a1af30d0fb209dc0500533862c25",
+"d4da39e8d8c8c8a379e7eebc54786c56",
+"e5b6490f74cc909ad3bcad244cdf45c3",
+"d757abf5e0c213cf36249fc0808dbd07",
+"3643be8f783e3fab2a4252a5fc39c9e8",
+"6c74d343f129312056d2ecf63522a261",
+"68d9f1c23f3e71c6ea1a76b55716740a",
+"e6b9a8fd4d6ed0819fd752c8653a313c",
+"9b81b72a281bb03117050afbf9b23838",
+"4522b5dbdc311a8133f2d30fac7f4347",
+"00ecd51481ef9f2ae10fdceeea5057bf",
+"21ef759dabb390cb4a7a7eb3b69e16d8",
+"c8096defde78d35a3f1a09f71bd23c60",
+"673fe6e11e5ead420a258d025b5c272a",
+"a0106d6c89b732d5ea430636bcbca55d",
+"b95755d9860fa51e153437df66914250",
+"aa6b6988ff55094bd76f01c48bc1a736",
+"fe489c95c6e9c2f088ac08b5cf4d6409",
+"aefcf1738b50617f51982a1b59954b48",
+"d2223992f9357ab9e464105622dc576a",
+"1c24dade180c90f11ce6f9fb94ed9661",
+"399e42e70b8ec767265311a75522a2f8",
+"9b629f3e913040f31b3fa666e21bc7bb",
+"0964c072028a5100a1c6e4efb5480351",
+"b07793f5a26b1d349b2a19916561e99b",
+"3873e9aa78507c125de161057f4a0504",
+"ff0b76680401157f025f965065a01c62",
+"99b86fa0eb3493c2c329e37308b8675d",
+"f698157785ddc7a5e94b0fbc6aae92ae",
+"b0b7ba07bba3637e9b57eb1c46e2fc68",
+"1402352ca5d81d2a61d6cb71ef17e0e2",
+"d90b8ba2f9b2b0d9528ee71265e9c528",
+"f6a36d29bcf96fe606eb13b7665b6640",
+"e97d7be972eee79d295de867474ee2eb",
+"42e41947301367e91e9ee0743cbc13db",
+"713b683e3529cb07ca82591e4e218eea",
+"c89cfffb6cc5488cac3814800bc88cee",
+"2e69ae3c8767aacb814048fbc46d0ef8",
+"22dd738781c07ad4e5c51b527a938d53",
+"79602b9e70b6944caa617f5ccb29e3e4",
+"08e90cffb82ae19b5aba045a722dd096",
+"b5a4eb933ed331a5b1c321d198b20d84",
+"cd88b3ba0561166d68972cc95d1028f4",
+"0614504a7a4cbe1a7e92ef8ce4a7d3de",
+"d416575b524dbcfcd264f4f0bc56e17d",
+"3563943a242ce3af1af9bc8eec662140",
+"e5bdf29139234ad4c4c138e370fcf757",
+"55f5178cca1529e346316d7851ab4757",
+"5a82ad1a5e5eb41c26bd1dbc23e0c6de",
+"4ded022b9e0b02c389f60c62edcd14bb",
+"54d16964ad5be8f1a92290f96dc92eb9",
+"8a4a104ff814b9f0d7ec00af2bc61017",
+"717a893578252151309a85782ed3b68f",
+"a6e109c0bcfdf48731b0c6da241940a0",
+"eb9649d142d7e72c3be2bd693ff8f5f4",
+"6b5120aacac7f69a7555b877092dbaa4",
+"bb2401498e6be09299b4be130148accd",
+"0b690e6f5b61ade458faa197d3d6aef7",
+"5cfe2ed7021df0c243565c7f00deb349",
+"fd5e0134b74c8b891b2f8103a1e5792b",
+"02bf66923579baa1b467d2133d01d556",
+"83a5ac0d9b086941d6bd8ff482b98b66",
+"5f97a5b4bd197a8cfcbae910c41c9919",
+"ef2e7c07b143e8fe1d30f5433a30a386",
+"4f17357afacd63fdf5cb6c4523497cb5",
+"12613c837832aba8370d5f4ac07e60ac",
+"b90dc6aeda3f74c28eae3c5f5d7a9864",
+"9e301cbd44dd4a301d59124a23a7c8e7",
+"996c67ef76538c5121ffd1970e7bb786",
+"1e30c2f23e556a3bb2f0587e03e4b005",
+"81645644782c5aa2c0397916395fa9a5",
+"4364bd059143f3f95bafafd026b47933",
+"223c0099b41001a218020a0485720242",
+"ed95e89ff448c1806ec7a1ddc09011c0",
+"6acf5b50d4085b540d0f05a8e44f62d8",
+"89dacc543a587062dfd17175db9529de",
+"e1cab5aaa3aa3e4a9f0bd6cbef9dac95",
+"43f09a976a04079331129f29a8a33318",
+"81740812ffea55ea8812ee96111fc22a",
+"ced57b3fd88073fd21f0dde559a6e7c3",
+"6a986d7ded9e42b83f755db6fae583ac",
+"3eb22f63fd2c3327c539f002605426b3",
+"7971a4b12de111f6d0d3c78b607b2d38",
+"1699d6a6358acffbf08233636696675a",
+"558b8e28b35c9267e4316410c09d752d",
+"6ceef41db565954086afdfb937b2062f",
+"3699a8719a4836f75c2e6c7569fd8641",
+"fa5e6d61e5e3a2f8809584fe38d6bb22",
+"0cd61866d46005f3ea99edee869d3580",
+"5b7071442ad354138fb9e2620cf6ee77",
+"810a024b41cbdf8605bfe1236bda1848",
+"e8ce972dcc2daa442424de9a71f8b4aa",
+"2c9b11f29d4758720c8f350c01087ed6",
+"14c20ef6327d603b10d0571456cdfc10",
+"14fbab0ebe31f0ba9f7921c80a70a044",
+"79f744b22596491c9968b7a9a710a6d3",
+"b18118d62797132ecbc62151c353b901",
+"b1af08aa4db33cf4caa804ec8d222b3b",
+"5a34fada284b733f88e4cbd5a7723de4",
+"a9eb58a048d023d7305f795a6a5b70a4",
+"723e5921e9bd1b401ba42e4233d27c4e",
+"1f78f043c296f8949e05da26a1f99fa6",
+"e5f19ca83ecac9de01ffbb9b700fe1b7",
+"b4ee43825f710ebc7598372fd70ae1c3",
+"6f8f157e6b1ccc686811f1ed2260a0a2",
+"d67ac2b804a88be3884dce2082bb9090",
+"647fe5eb1e45a16d25b0579b6dddeecf",
+"32f2a030ceecc0fb09b739a91ad98b98",
+"93525d8d3ba7f256c83e8ca0ce9d9f9b",
+"a9b5415d5db64f2563ac72628cf221a4",
+"0be69372c7f8542a82ef8ef9e4ae090c",
+"cc81a91eada4d7e74f64e2995f608088",
+"c29f860f6a3f4e820b9963dac7703e1c",
+"cba0dccdbdd19252f39fb2cf92d2988c",
+"27086162fec3a17cf0f69865e85ea3b3",
+"691c045bed7a04a9b19a1231739d940a",
+"e6efb8815c3030d4c53855a9b911cc92",
+"10e15c2b07695609ee2de61b8f802e51",
+"7462a87e2bf8620dd13828b0268ec77b",
+"4e8b5dc8172dd248dde36defaff2c6d6",
+"25353a6244549d21205910ff7f52f428",
+"0e64f1662c186c1d9c25d8864faf23a2",
+"ff5d33d8634320d46cf21becd65171d3",
+"9d888733feeffe155dcd1fcc850c5f27",
+"e2a8c8adff87a9088c217438274e07aa",
+"c418b1cb6dcfd820816c0e22d3f1cad6",
+"e3d0cacfefa22568194e9810c5becdcc" ];
+      }
+
+      function onFirstFrameRendered()
+      {
+          //console.log("First frame rendered!");
+      }
+
+      function onGameSetWindowSize(width,height)
+      {
+          console.log("Window size set to width: " + width + ", height: " + height);
+
+          startingHeight = height;
+          startingWidth = width;
+          startingAspect = startingWidth / startingHeight;
+          ensureAspectRatio();
+      }
+
+    function triggerAd(adId, _callback_beforeAd, _callback_afterAd, _callback_adDismissed, _callback_adViewed, _callback_adbreakDone) {
+       // need to take a copy of the RValues represented
+       var pRValueCopy = triggerAdPrefix( _callback_beforeAd, _callback_afterAd, _callback_adDismissed, _callback_adViewed, _callback_adbreakDone );
+       var pCallbackBeforeAd = pRValueCopy + (0*16);
+       var pCallbackAfterAd = pRValueCopy + (1*16);
+       var pCallbackAdDismissed = pRValueCopy + (2*16);
+       var pCallbackAdViewed = pRValueCopy + (3*16);
+       var pCallbackAdBreakDone = pRValueCopy + (4*16);
+
+       adBreak({
+         "type": "reward",                    // The type of this placement
+         "name": adId,                        // A descriptive name for this placement
+
+         "beforeAd": () => {                  // Prepare for the ad. Mute and pause the game flow
+           console.log("beforeAd");
+           // trigger _callback_beforeAd to game
+           doGMLCallback( pCallbackBeforeAd, { id:adId } );
+         },
+         "afterAd" : () => {                   // Resume the game and re-enable sound
+           console.log("afterAd");
+           // trigger _callback_afterAd to game
+           doGMLCallback( pCallbackAfterAd, { id:adId } );
+         },
+         "beforeReward": (showAdFn) => {      // Show reward prompt (call showAdFn() if clicked)
+           console.log("beforeReward");
+           showAdFn();
+           // Setup native prompt to indicate ad will load
+           // Will not be setup by dev so this UX controlled by GXC
+         },
+         "adDismissed": () => {               // Player dismissed the ad before it finished
+           console.log("adDismissed");
+           // trigger _callback_adDismissed to game
+           doGMLCallback( pCallbackAdDismissed, { id:adId } );
+         },
+         "adViewed": () => {                  // Player watched the ad–give them the reward.
+           console.log("adViewed");
+           // trigger _callback_adViewed to game
+           doGMLCallback( pCallbackAdViewed, { id:adId } );
+         },
+         "adBreakDone": (placementInfo) => {  // Always called (if provided) even if an ad didn't show
+           console.log("adBreakDone");
+           // trigger _callback_adBreakDone to game
+           doGMLCallback( pCallbackAdBreakDone, { id:adId } );
+           triggerAdPostfix( pRValueCopy );
+         }, 
+       });
+      }
+
+      function triggerPayment(itemId, _callback_PaymentComplete) {
+        var pRValueCopy = triggerPaymentPrefix(_callback_PaymentComplete);
+        setTimeout(() => {
+          console.log("triggerPayment");
+          doGMLCallback(pRValueCopy, { id:itemId });        
+        }, 1000);
+        triggerPaymentPostfix();
+      }
+
+      function ensureAspectRatio() {
+        if (canvasElement === undefined) {
+          return;
+        }
+
+        if (!CHANGE_ASPECT_RATIO) {
+          return;
+        }
+        
+        if (startingHeight === undefined && startingWidth === undefined) {
+          return;
+        }
+
+        canvasElement.classList.add("active");
+
+        const maxWidth = window.innerWidth;
+        const maxHeight = window.innerHeight;
+        var newHeight, newWidth;
+
+        // Find the limiting dimension.
+        var heightQuotient = startingHeight / maxHeight;
+        var widthQuotient = startingWidth / maxWidth;
+
+        if (heightQuotient > widthQuotient) {
+          // Max out on height.
+          newHeight = maxHeight;
+          newWidth = newHeight * startingAspect;
+        } else {
+          // Max out on width.
+          newWidth = maxWidth;
+          newHeight = newWidth / startingAspect;
+        }
+
+        canvasElement.style.height = newHeight + "px";
+        canvasElement.style.width = newWidth + "px";
+      }
+
+      function pause() { // Don't change the name - GX Mobile calls it when the app becomes inactive.
+        if (!canvasElement.classList.contains("active")) { // Wait for the canvas to load.
+          return
+        }
+        
+        GM_pause();
+        pauseMenu.hidden = false;
+        canvasElement.classList.add("paused");
+      }
+
+      function resume() {
+        GM_unpause();
+        pauseMenu.hidden = true;
+        canvasElement.classList.remove("paused");
+        canvasElement.classList.add("unpaused");
+        enterFullscreenIfSupported();
+        lockOrientationIfSupported();
+      }
+
+      function quitIfSupported() {
+        if (window.oprt && window.oprt.closeTab) { /* GX Mobile API */
+          window.oprt.closeTab();
+        } else if (window.chrome && window.chrome.runtime && window.chrome.runtime.sendMessage) {
+          window.chrome.runtime.sendMessage('mpojjmidmnpcpopbebmecmjdkdbgdeke', { command: 'closeTab' })
+        }
+      }
+
+      function enterFullscreenIfSupported() {
+        if (!window.oprt || !window.oprt.enterFullscreen) { /* GX Mobile API */
+          return;
+        }
+
+        window.oprt.enterFullscreen();
+        let viewStatus = GM_get_view_status();
+        viewStatus.fullscreen = true;
+        GM_set_view_status(viewStatus);
+      }
+
+      function lockOrientationIfSupported() {
+        if (!window.oprt || !window.oprt.lockPortraitOrientation || !window.oprt.lockLandscapeOrientation) { /* GX Mobile API */
+          return;
+        }
+
+        let viewStatus = GM_get_view_status();
+        if (viewStatus.landscape === true && viewStatus.portrait === false) {
+          window.oprt.lockPortraitOrientation();
+        } else if (viewStatus.landscape === false && viewStatus.portrait === true) {
+          window.oprt.lockPortraitOrientation();
+        }
+      }
+
+      /* Observe the dimensions of body and ensureAspectRatio of the canvas (whilst taking up maximum space)
+       *
+       * NOTE(robertz):
+       *  We also need to request an Animation Frame to do this, if we do not, resizeObserver might throw error
+       *  "ResizeObserver loop limit exceeded", which means that
+       *  "[...] ResizeObserver was not able to deliver all observations within a single animation frame"
+       *  https://stackoverflow.com/a/50387233 (source).
+       *
+       *  There are different ways to solve the issue, since the error is benign (meaning it wont crash anything)
+       *  we could choose to ignore it via changing the window.onerror method, i.e
+       *  ```
+       *  window.onerror((event)=> {
+       *    if(event==="ResizeObserver loop limit exceeded") {
+       *       return
+       *    }
+       *     ///...rest
+       *  }
+       *  ```
+       *  But for now we request an animationFrame which seems to be the recommended way to go about it.
+       *
+       * NOTE(ddrechny):
+       *  window.innerWidth/Height value updates are sometimes delayed in WebKit on iOS after an orientation
+       *  change. Hence we're calling ensureAspectRatio one more time after a delay to minimize the risk of
+       *  sizing the canvas with outdated values.
+       */
+      const resizeObserver = new ResizeObserver(() => {
+        window.requestAnimationFrame(ensureAspectRatio);
+        setTimeout(() => window.requestAnimationFrame(ensureAspectRatio), 100);
+      });
+      resizeObserver.observe(document.body);
+
+      /* NOTE(ddrechny):
+       *  Body needs to be scrollable on desktop browsers for debug buttons to be accessible.
+       *  On mobile browsers scrolling can be activated accidentally and debug buttons aren't useful,
+       *  so it's better to disable it.
+       */
+      if (/Android|iPhone|iPod/i.test(navigator.userAgent)) {
+        bodyElement.className = "scrollingDisabled";
+        canvasElement.classList.add("animatedSizeTransitions");
+        outputContainerElement.hidden = true;
+      }
+
+      document.addEventListener("visibilitychange", (event) => {
+        if (document.visibilityState != "visible") {
+          pause();
+        } else if (isMultiplayer()) {
+          resume();
+        }
+      });
+
+      window.addEventListener("load", (event) => {
+        if ((!window.oprt || !window.oprt.enterFullscreen) && (!window.chrome || !window.chrome.runtime || !window.chrome.runtime.sendMessage)) {
+          quitButton.hidden = true;
+        }
+      });
+
+      setWadLoadCallback(() => {
+        enterFullscreenIfSupported();
+        lockOrientationIfSupported();
+      });
+
+      var read_ptr = 0;
+      read_int = () => {
+        var heap_slice = Module["HEAPU8"].subarray(read_ptr, read_ptr + 4);
+        var buffer = new ArrayBuffer(4);
+        var barray = new Uint8Array(buffer);
+        for (var i = 0; i < 4; i++) barray[i] = heap_slice[i];
+        var int_array = new Int32Array(buffer);
+        var int = int_array[0];
+        read_ptr += 4;
+        return int;
+      };
+
+      read_pointer = () => {
+        var ptr = Module.getValue(read_ptr, "*");
+        read_ptr += 8;
+        return ptr;
+      };
+
+      readPeer = () => {
+        var peer = {
+          peer: read_int(),
+          local_frames_ahead: read_int(),
+          rtt: read_int(),
+          remote_frame_rate: read_int(),
+          remote_frame_delay: read_int(),
+        }
+
+        return peer;
+      }
+
+      readStats = (s) => {
+        read_ptr = s;
+
+        var stats = {
+          kbps_sent: read_int(),
+          kbps_received: read_int(),
+          pps_sent: read_int(),
+          pps_received: read_int(),
+          frame_rate: read_int(),
+          rollbacks: read_int(),
+          frame_delay: read_int(),
+          skipped_frames: read_int(),
+          rejected_inputs: read_int(),
+          relay_rtt: read_int(),
+          peer: read_int(),
+          num_peers: read_int(),
+
+          serialization_stats: {
+            state_size: read_int(),
+            managed_instances_num: read_int()
+          },
+          peers: []
+        }
+
+        read_ptr = read_pointer();
+        for (var j = 0; j < stats.num_peers; ++j) {
+          stats.peers.push(readPeer());
+        }
+
+        return stats;
+
+      }
+
+      var acceptable_rollback_frames = 0;
+      var set_acceptable_rollback = (frames) => {
+        acceptable_rollback_frames = frames;
+      }
+
+      drawLocal = (peers_elem, frame_delay_elem, relay_rtt_elem, peer_name, relay_rtt, frame_delay) => {
+          drawPeer(peers_elem, frame_delay_elem, peer_name, 0, frame_delay, 0);
+
+          const per_pixel = 100/16;
+          const frames_rtt = relay_rtt/16; // To ceil, or not to ceil - that's the question.
+
+          const y = 100 - frames_rtt * per_pixel;
+
+          const relay_rtt_marker = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          relay_rtt_marker.setAttribute('x1', -2);
+          relay_rtt_marker.setAttribute('y1', y);
+          relay_rtt_marker.setAttribute('x2', 2);
+          relay_rtt_marker.setAttribute('y2', y);
+
+          relay_rtt_marker.setAttribute('data-relay-rtt', relay_rtt);
+
+          relay_rtt_marker.classList.add(peer_name);
+          relay_rtt_marker.classList.add('relay-rtt');
+
+          relay_rtt_elem.appendChild(relay_rtt_marker);
+      }
+
+      drawPeer = (peers_elem, frame_delay_elem, peer_name, rtt, frame_delay, frames_ahead) => {
+        const per_pixel = 100/16;
+        const frames_rtt = rtt/16; // To ceil, or not to ceil - that's the question.
+        const x = 50 + frames_ahead * per_pixel;
+        const y = 100 - frames_rtt * per_pixel;
+
+        const peer = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        peer.setAttribute('cx', x);
+        peer.setAttribute('cy', y);
+        peer.setAttribute('r', 1);
+
+        peer.setAttribute('data-rtt', rtt);
+        peer.setAttribute('data-frame-delay', frame_delay);
+        peer.setAttribute('data-frames-ahead', frames_ahead);
+
+        peer.classList.add(peer_name);
+        peer.classList.add('peer');
+
+        peers_elem.appendChild(peer);
+
+        const peer_frame_delay = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        peer_frame_delay.setAttribute('cx', x);
+        peer_frame_delay.setAttribute('cy', y);
+        peer_frame_delay.setAttribute('r', frame_delay * per_pixel);
+
+        peer_frame_delay.classList.add(peer_name);
+        peer_frame_delay.classList.add('peer-frame-delay');
+
+        frame_delay_elem.appendChild(peer_frame_delay);
+
+        if (acceptable_rollback_frames > 0) {
+          const peer_acceptable_rollback = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          peer_acceptable_rollback.setAttribute('cx', x);
+          peer_acceptable_rollback.setAttribute('cy', y);
+          peer_acceptable_rollback.setAttribute('r', (frame_delay + acceptable_rollback_frames) * per_pixel);
+
+          peer_acceptable_rollback.classList.add(peer_name);
+          peer_acceptable_rollback.classList.add('peer-acceptable-rollback');
+          frame_delay_elem.appendChild(peer_acceptable_rollback);
+        }
+      }
+
+      report_stats = (stats_data) => {
+
+        var stats = readStats(stats_data);
+
+        var peers_elem = document.getElementById("stats-network-peers");
+        var frame_delay_elem = document.getElementById("stats-network-peer-frame-delays");
+        var relay_rtt_elem = document.getElementById("stats-network-relay-rtt");
+
+        peers_elem.innerHTML = '';
+        frame_delay_elem.innerHTML = '';
+        relay_rtt_elem.innerHTML = '';
+
+        stats.peers.forEach(p => {
+          drawPeer(peers_elem, frame_delay_elem, 'peer' + p.peer, p.rtt, p.remote_frame_delay, p.local_frames_ahead);
+        });
+
+        drawLocal(peers_elem, frame_delay_elem, relay_rtt_elem, 'peer' + stats.peer, stats.relay_rtt, stats.frame_delay);
+      }
+
+      let wallpaperConfig = {};
+      const wallpaperConfigKey = 'wallpaper-config';
+
+      function wallpaper_init_config_controls(definitions) {
+        const wallpaperContainer = document.getElementById("wallpaper-container");
+        wallpaperContainer.style.display = "block";
+
+        let configStyle = '<style type="text/css">' +
+          'body { color: white; font-family: Averta, -apple-system, "Segoe UI", system-ui, sans-serif; font-style: normal; font-size: 10px; }' +
+          '.config-row { display: flex; justify-content: flex-start; align-items: center; padding: .5em; }' +
+          '.config-row > label { flex: 1 }' +
+          '.config-row > input { flex: initial; }' +
+          '.config-row > textarea { flex: 1; }' +
+          '.config-row-label { font-size: 12px; font-weight: 600; }' +
+          'button { padding: 8px 16px; border-radius: 4px; background-color: unset; border-color: rgb(199, 159, 234); color: rgb(199, 159, 234); }' +
+          '</style>';
+        let configHTML = '<html><head><title></title>' + configStyle + '</head><body>' +
+          '<div class="wallpaper-header"><h1>Live Wallpaper Configurator</h1><button id="wallpaper-reset-parameters">Reset parameters</button></div>' +
+          '<div class="wallpaper-config" id="wallpaper-config"></div>' +
+          '</body></html>'
+
+        const wallpaperConfigDocument = document.getElementById("wallpaper-config-iframe").contentDocument;
+        wallpaperConfigDocument.open();
+        wallpaperConfigDocument.write(configHTML);
+        wallpaperConfigDocument.close();
+
+        const storedConfig = JSON.parse(localStorage.getItem(wallpaperConfigKey));
+        if (storedConfig) {
+          wallpaperConfig = storedConfig;
+        }
+
+        const configElement = wallpaperConfigDocument.getElementById("wallpaper-config");
+        const resetButton = wallpaperConfigDocument.getElementById("wallpaper-reset-parameters");
+        resetButton.addEventListener("click", (e) => {
+          wallpaper_reset_config();
+          wallpaperConfig = {};
+          add_config_elems(configElement, definitions);
+          notify_config_change();
+        }, false);
+
+        add_config_elems(configElement, definitions);
+        notify_config_change();
+      }
+
+      function add_config_elems(configElement, definitions) {
+        while (configElement.hasChildNodes()) {
+          configElement.removeChild(configElement.lastChild);
+        }
+
+        definitions.value
+          .map(d => create_elems(d, wallpaperConfig, ""))
+          .filter(e => e !== null && e !== undefined)
+          .map(e => configElement.appendChild(e));
+      }
+
+      function create_elems(definition, config, prefixId) {
+          if (definition.type === undefined || definition.name === undefined) {
+            console.log("missing definition name or type for: ", definition);
+            return null;
+          }
+
+          if  (definition.type === "section") {
+            return create_section_elem(definition, config, prefixId);
+          }
+
+
+          if (definition.value === undefined ) {
+            console.log("missing definition value for: ", definition);
+            return null;
+          }
+
+          if (definition.type === "range") {
+            return create_range_elem(definition, config, prefixId);
+          }
+
+          if (definition.type === "boolean") {
+            return create_checkbox_elem(definition, config, prefixId);
+          }
+
+          if (definition.type === "color" || definition.type === "colour") {
+            return create_color_elem(definition, config, prefixId);
+          }
+
+          if (definition.type === "string") {
+            return create_text_elem(definition, config, prefixId);
+          }
+
+          if (definition.type === "string_multiline") {
+            return create_multiline_text_elem(definition, config, prefixId);
+          }
+
+          if (definition.type === "select") {
+            return create_select_elem(definition, config, prefixId);
+          }
+
+          if (definition.type === "file" || definition.type === "folder") {
+            return create_not_supported_elem(definition, config);
+          }
+          
+          console.log("missing config value for: ", definition);
+          return null;
+      }
+
+      function create_section_elem(definition, config, prefixId) {
+        const divElem = document.createElement("div");
+
+        const headerElem = document.createElement("h2");
+        headerElem.innerHTML = definition.label;
+
+        divElem.appendChild(headerElem);
+
+        const sectionId = prefixId + definition.name + "-"
+        if (!config[definition.name]) {
+          config[definition.name] = {};
+        }
+
+        definition.children
+          .map(c => create_elems(c, config[definition.name], sectionId))
+          .filter(e => e !== null && e !== undefined)
+          .map(e => divElem.appendChild(e));
+
+        return divElem;
+      }
+
+      function get_initial_value(definition, config) {
+        let value =  definition.value;
+        const configValue = config[definition.name];
+        if (configValue && (typeof(configValue) === typeof(value))) {
+          value = configValue;
+        }
+
+        return value;
+      }
+
+      function wrap_with_label(inputElem, definition, prefixId) {
+        const controlElem = document.createElement("div");
+        controlElem.classList.add(definition.name + "-control");
+        controlElem.classList.add("config-row");
+
+        const labelElem = document.createElement("label");
+        labelElem.htmlFor = prefixId + definition.name;
+        labelElem.innerHTML = "<span class='config-row-label'>" + (definition.label || definition.name) + "</span>";
+        if (definition.description) {
+          labelElem.innerHTML += "<p>" + definition.description + "</p>";
+        }
+        controlElem.appendChild(labelElem);
+
+        inputElem.id = prefixId + definition.name;
+        controlElem.appendChild(inputElem);
+
+        return controlElem;
+      }
+
+      function create_range_elem(definition, config, prefixId) {
+        const value = get_initial_value(definition, config);
+
+        const valueElem = document.createElement("span");
+        valueElem.style = "margin: 0.5em";
+        valueElem.innerHTML = "(" + value + ")";
+
+        const stepElem = document.createElement("input");
+        stepElem.id = prefixId + definition.name;
+        stepElem.type = "range";
+        stepElem.min = definition.min || 0;
+        stepElem.max = definition.max || 100;
+        stepElem.step = definition.step || 1;
+        stepElem.value = value;
+
+        config[definition.name] = value;
+        function range_value_updated(e) {
+          const valueUpdate = Number(e.target.value);
+          config[definition.name] = valueUpdate;
+          valueElem.innerHTML = "(" + valueUpdate + ")";
+
+          notify_config_change();
+        }
+
+        stepElem.addEventListener("change", range_value_updated, false);
+        stepElem.addEventListener("input", range_value_updated, false);
+
+        const valueWrapper = document.createElement("span");
+        valueWrapper.appendChild(valueElem);
+        valueWrapper.appendChild(stepElem);
+
+        return wrap_with_label(valueWrapper, definition, prefixId);
+      }
+
+      function create_checkbox_elem(definition, config, prefixId) {
+        const value = get_initial_value(definition, config);
+
+        const checkboxElem = document.createElement("input");
+        checkboxElem.type = "checkbox";
+        checkboxElem.checked = value;
+        
+        config[definition.name] = value;
+        checkboxElem.addEventListener("change", (e) => {
+          const valueUpdate = Boolean(e.target.checked);
+          config[definition.name] = valueUpdate;
+          notify_config_change();
+        });
+
+        return wrap_with_label(checkboxElem, definition, prefixId);
+      }
+
+      function create_color_elem(definition, config, prefixId) {
+        const value = get_initial_value(definition, config);
+
+        const bgrColor = value;
+        const r = (bgrColor & 0x0000ff);
+        const g = (bgrColor & 0x00ff00) >> 8;
+        const b = (bgrColor & 0xff0000) >> 16;
+        const rgbColor = (r << 16) + (g << 8) + b;
+        const color = "#" + rgbColor.toString(16).padStart(6, '0');
+
+        const colorElem = document.createElement("input");
+        colorElem.type = "color";
+        colorElem.value = color;
+
+        config[definition.name] = value;
+        function color_value_updated(e) {
+          const color = e.target.value;
+          const rgbColor = parseInt(color.slice(1), 16);
+          const r = (rgbColor & 0xff0000) >> 16;
+          const g = (rgbColor & 0x00ff00) >> 8;
+          const b = (rgbColor & 0x0000ff);
+          const bgrColor = (b << 16) + (g << 8) + r;
+
+          config[definition.name] = bgrColor;
+          notify_config_change();
+        }
+
+        colorElem.addEventListener("change", color_value_updated, false);
+        colorElem.addEventListener("input", color_value_updated, false);
+        
+        return wrap_with_label(colorElem, definition, prefixId);
+      }
+
+      function create_text_elem(definition, config, prefixId) {
+        const value = get_initial_value(definition, config);
+
+        const textElem = document.createElement("input");
+        textElem.type = "text";
+        textElem.value = value;
+        console.log("text", value)
+        if (definition.max_length && definition.max_length > 0) {
+          textElem.maxLength = definition.max_length;
+        }
+
+        config[definition.name] = value;
+        textElem.addEventListener("input", (e) => {
+          config[definition.name] = e.target.value;
+          notify_config_change();
+        });
+        
+        return wrap_with_label(textElem, definition, prefixId);
+      }
+
+      function create_multiline_text_elem(definition, config, prefixId) {
+        const value = get_initial_value(definition, config);
+
+        const textareaElem = document.createElement("textarea");
+        textareaElem.rows = 5;
+        textareaElem.cols = 50;
+        textareaElem.value = value;
+        if (definition.max_length && definition.max_length > 0) {
+          textareaElem.maxLength = definition.max_length;
+        }
+
+        config[definition.name] = value;
+        textareaElem.addEventListener("input", (e) => {
+          config[definition.name] = e.target.value;
+          notify_config_change();
+        });
+        
+        return wrap_with_label(textareaElem, definition, prefixId);
+      }
+
+      function create_select_elem(definition, config, prefixId) {
+        const value = get_initial_value(definition, config);
+
+        const selectElem = document.createElement("select");
+        selectElem.value = value;
+        
+        const options = definition.options || [];
+        options.forEach(o => {
+          const option = document.createElement("option");
+          option.value = o;
+          option.text = o;
+          option.selected = o == value ? "selected" : "";
+          selectElem.appendChild(option);
+        })
+
+        config[definition.name] = value;
+        selectElem.addEventListener("change", (e) => {
+          e.selected = "selected";
+          config[definition.name] = e.target.value;
+          notify_config_change();
+        });
+        
+        return wrap_with_label(selectElem, definition, prefixId);
+      }
+
+      function create_not_supported_elem(definition, config, prefixId) {
+        const labelElem = document.createElement("label");
+        labelElem.innerHTML = "Not supported in browser";
+
+        config[definition.name] = definition.value;
+        return wrap_with_label(labelElem, definition, prefixId);
+      }
+
+      function notify_config_change() {
+        console.log(wallpaperConfig)
+        localStorage.setItem(wallpaperConfigKey, JSON.stringify(wallpaperConfig));
+
+        wallpaper_update_config(JSON.stringify(wallpaperConfig));
+      }
+    </script>
+    <script async type="text/javascript" src="runner.js"></script>
+
+    <!-- Custom BodyEnd code is injected here -->
+    
+
+  </body>
+  
+  <!-- Custom PostBody code is injected here -->
+  
+</html>
