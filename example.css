@@ -75,6 +75,12 @@
     
 }
 
+.audio-container{
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+}
+
 #siteInfo {
     display: flex;
     flex-direction: column;
