@@ -1,6 +1,7 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 /game_files/NXTALE/game.unx filter=lfs diff=lfs merge=lfs -text
+/game_files/slimerancher/index.html filter=lfs diff=lfs merge=lfs -text
 /Game/index.pck filter=lfs diff=lfs merge=lfs -text
 /Game/index.wasm filter=lfs diff=lfs merge=lfs -text
 /Game2/index.wasm filter=lfs diff=lfs merge=lfs -text
@@ -27,4 +28,3 @@
 /game_files/Platformer/index.wasm filter=lfs diff=lfs merge=lfs -text
 /game_files/SourceLikeMovement/index.wasm filter=lfs diff=lfs merge=lfs -text
 /game_files/FishingGameSound/index.wasm filter=lfs diff=lfs merge=lfs -text
-/game_files/slimerancher/index.html filter=lfs diff=lfs merge=lfs -text
