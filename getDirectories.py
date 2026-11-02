@@ -1,4 +1,5 @@
 
 import os
 
-print(os.listdir("Images/cats"))
+print("|".join(os.listdir("game_files/offline")).replace(".html", ""))
+
