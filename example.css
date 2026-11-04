@@ -299,3 +299,55 @@ body{
     margin: 0px;
     
 }
+
+
+/* Game link collection */
+.linkgames {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
+    padding: 20px;
+    width: 90%;
+    margin: auto;
+}
+
+/* Individual game links */
+.gameLink {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    min-height: 65px;
+    padding: 10px;
+
+    background: linear-gradient(135deg, #3e0b81, #5e0fc5);
+    border: 2px solid #29a9ff;
+    border-radius: 10px;
+
+    color: white;
+    font-size: 20px;
+    text-align: center;
+
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+
+    transition: all 150ms ease;
+}
+
+/* Hover effect */
+.gameLink:hover {
+    background: linear-gradient(135deg, #29a9ff, #5e0fc5);
+    transform: translateY(-5px) scale(1.03);
+
+    box-shadow: 0 6px 15px rgba(41, 169, 255, 0.35);
+}
+
+/* Click effect */
+.gameLink:active {
+    transform: scale(0.96);
+}
+
+/* Keyboard accessibility */
+.gameLink:focus-visible {
+    outline: 3px solid white;
+    outline-offset: 4px;
+}

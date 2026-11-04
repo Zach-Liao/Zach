@@ -69,6 +69,7 @@
 
 				for (let directory of gameDirectories){
 					newLink = document.createElement('a');
+					newLink.classList.add("gameLink")
 					if (gameNames[gameDirectories.indexOf(directory)] != 'none'){
 						newLink.text = gameNames[gameDirectories.indexOf(directory)];
 					}
