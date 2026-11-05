@@ -1,0 +1,4 @@
+/Build/data_wasm_*
+  Content-Type: application/wasm
+/Build/data_chunk_*
+  Content-Type: application/octet-stream

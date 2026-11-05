@@ -923,16 +923,74 @@ function startUnity() {
   var canvas = document.querySelector("#unityContainer canvas");
   var buildUrl = "Build";
   var loaderUrl = buildUrl + "/Build.loader.js" + "?v=" + Date.now();
-  var config = {
-    dataUrl: buildUrl + "/Build.data",
-    frameworkUrl: buildUrl + "/Build.framework.js" + "?v=" + Date.now(),
-    codeUrl: buildUrl + "/Build.wasm",
-    streamingAssetsUrl: "StreamingAssets",
-    devicePixelRatio: 1,
-    companyName: "woahhcrackers",
-    productName: "Kerbal Space Program",
-    productVersion: "1.12.4"
-  };
+  // 1. List EVERY chunk file your PowerShell script made (keep them in numerical order!)
+  var dataChunkFiles = [
+    buildUrl + '/data_chunk_0',
+    buildUrl + '/data_chunk_1',
+    buildUrl + '/data_chunk_2',
+    buildUrl + '/data_chunk_3',
+    buildUrl + '/data_chunk_4',
+    buildUrl + '/data_chunk_5',
+    buildUrl + '/data_chunk_6',
+    buildUrl + '/data_chunk_7',
+    buildUrl + '/data_chunk_8',
+    buildUrl + '/data_chunk_9',
+    buildUrl + '/data_chunk_10',
+    buildUrl + '/data_chunk_11',
+    buildUrl + '/data_chunk_12',
+    buildUrl + '/data_chunk_13',
+    buildUrl + '/data_chunk_14',
+    buildUrl + '/data_chunk_15',
+    buildUrl + '/data_chunk_16',
+    buildUrl + '/data_chunk_17',
+    buildUrl + '/data_chunk_18',
+    buildUrl + '/data_chunk_19'
+  ];
+  
+  var wasmChunkFiles = [
+    buildUrl + '/data_wasm_0',
+    buildUrl + '/data_wasm_1',
+    buildUrl + '/data_wasm_2'
+  ];
+
+  // Multi-chunk stitcher function
+  async function stitchMultiple(filesList, type) {
+    var buffers = await Promise.all(
+      filesList.map(url => fetch(url).then(res => {
+        if (!res.ok) throw new Error("Missing game segment: " + url);
+        return res.arrayBuffer();
+      }))
+    );
+    return URL.createObjectURL(new Blob(buffers, { type: type }));
+  }
+
+  // Set up an empty config object that will populate once stitched
+  var config = {};
+  
+  Promise.all([
+    stitchMultiple(dataChunkFiles, 'application/octet-stream'),
+    stitchMultiple(wasmChunkFiles, 'application/wasm')
+  ]).then(function(urls) {
+    var vData = urls[0];
+    var vWasm = urls[1];
+    
+    // YOUR ORIGINAL CONFIG (Only the data/wasm links point to the stitched files)
+    config.dataUrl = vData;
+    config.frameworkUrl = buildUrl + "/Build.framework.js" + "?v=" + Date.now();
+    config.codeUrl = vWasm;
+    config.streamingAssetsUrl = "StreamingAssets";
+    config.devicePixelRatio = 1;
+    config.companyName = "woahhcrackers";
+    config.productName = "Kerbal Space Program";
+    config.productVersion = "1.12.4";
+
+    loadStatus.textContent = "Loading WebGL engines...";
+    
+
+  }).catch(function(err) {
+    bootError(err.message || err);
+  });
+
   function bootError(message) {
     loadBox.style.display = "none";
     cont.style.display = "none";
