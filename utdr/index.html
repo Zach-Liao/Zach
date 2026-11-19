@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+	<title>Games</title>
+	<link rel="stylesheet" href="/example.css">
+	<link rel="stylesheet" href="example.css">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+	<link rel="icon" type="image/x-icon" href="icon.ico">
+
+
+	</head>
+	<body>
+
+
+		<div class = "bar">
+			<a href="">Home</a>
+			<a href="Games">Games</a>
+			<a href="KITTEH">Kitties</a>
+			<a href="CoolPeople/">Cool People</a>
+		</div>
+		
+		<div class="stuff">
+			<h2>Undertale / Deltarune</h2>
+			<p>
+			Here is a collection of undertale or deltarune stuff<br>
+			For deltarune press 'p' to open the settings and save manager
+			</p>
+
+			<div class="games" 
+			data-directories='NXTALE|deltarune|BadTimeSimulator'
+			data-names='Undertale||Deltarune|Bad Time Sim'>
+
+			</div>
+
+			
+
+		</div>
+
+		<template id="gameTemplate">
+			<div class="gameHolder">
+				<h3 class="gameTitle">A Fishing Game</h3>
+				<iframe class= "gameFrame" data-src="Game/index.html" allowfullscreen="" width="640" height="360"></iframe>
+
+				<button class="fullScreen"></button>
+
+				<div class="gameBg" style="background-image: linear-gradient(to bottom, rgba(134, 42, 255, 0.5), rgba(0, 0, 0, 0.5)), url('Images/Fishing Scene.png')"></div>
+				<button class="startButton">Start</button>
+			</div>		
+		</template>
+
+
+		<script src="STUFF.js"></script>
+
+	
+		
+	</body>
+
+
+</html>
+
