@@ -16,8 +16,11 @@ for (let i of gameHolder){
 
     for (let directory of gameDirectories){
         newGame = _gameTemplate.content.cloneNode(true);
-        newGame.querySelector(".gameFrame").setAttribute("data-src", "/Zach/game_files/" + directory + "/index.html");
+        newGame.querySelector(".gameFrame").setAttribute("data-src", "/Zach/game_files/" + directory);
         newGame.querySelector(".gameBg").setAttribute("style", `background-image: linear-gradient(to bottom, rgba(134, 42, 255, 0.5), rgba(0, 0, 0, 0.5)), url(${directory + '/cover.png'})`);
+
+        newGame.querySelector(".openExternal").setAttribute("href", "/Zach/game_files/" + directory)
+        
 
         if (gameNames[gameDirectories.indexOf(directory)] != 'none'){
             newGame.querySelector(".gameTitle").textContent = gameNames[gameDirectories.indexOf(directory)];
